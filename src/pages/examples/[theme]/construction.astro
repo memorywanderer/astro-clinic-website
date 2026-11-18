@@ -1,0 +1,109 @@
+---
+import { themes, type Theme } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Features from '@/components/blocks/Features.astro';
+import Gallery from '@/components/blocks/Gallery.astro';
+import About from '@/components/blocks/About.astro';
+import Testimonials from '@/components/blocks/Testimonials.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import { exampleNavigation, exampleFooter } from '@/content/business-examples';
+import {
+  quotations,
+  quoteNotice,
+  galleryItems,
+} from '@/content/business-showcase';
+import {
+  structureMedia,
+  engineeringFeatures,
+} from '@/content/component-showcase';
+export function getStaticPaths() {
+  return import.meta.env.DEV
+    ? themes.map((theme) => ({ params: { theme }, props: { theme } }))
+    : [];
+}
+interface Props {
+  theme: Theme;
+}
+const { theme } = Astro.props;
+const gallery = galleryItems.map((item) => ({
+  ...item,
+  link: item.link ? { ...item.link, href: '#about' } : undefined,
+}));
+---
+
+<BaseLayout title="Пример строительной компании · Phase 03.1" {theme}>
+  <div class="relative">
+    <Header
+      id="construction-header"
+      layout="overlay"
+      name="Конструкция · образец"
+      homeHref="#start"
+      items={exampleNavigation}
+      navigationLabel="Разделы строительного примера"
+      menuLabel="Меню"
+    />
+    <main class="lg:pt-section">
+      <p class="page-container pt-section text-caption">
+        Демонстрация компонентов. Иллюстрации являются схемами и не представляют
+        реализованные объекты.
+      </p>
+      <Hero
+        id="start"
+        layout="fullBleed"
+        title="Точная структура. Большой масштаб."
+        eyebrow="Пример B"
+        description="Полноширинная композиция с технической графикой."
+        media={structureMedia}
+        mediaPriority
+      />
+      <Features title="Основа работы" items={engineeringFeatures} />
+      <Gallery
+        title="Пространство и конструкция"
+        layout="featured"
+        items={gallery}
+      />
+      <About
+        id="about"
+        layout="editorial"
+        title="Проект складывается из решений"
+        media={structureMedia}
+      >
+        <p slot="description">
+          Типографический рассказ и поддерживающая иллюстрация. Содержимое и
+          последовательность разделов задаются страницей.
+        </p>
+      </About>
+      <Testimonials
+        layout="featured"
+        title="Крупная цитата"
+        description={quoteNotice}
+        items={quotations.slice(0, 2)}
+      />
+      <CTA
+        id="contact"
+        layout="split"
+        title="Давайте начнём с контекста"
+        description="В демонстрации обращения не принимаются."
+      >
+        <a slot="actions" href="#about" class="text-primary underline">
+          Вернуться к подходу
+        </a>
+      </CTA>
+    </main>
+  </div>
+  <Footer
+    layout="extended"
+    name="Конструкция · образец"
+    homeHref="#start"
+    groups={exampleFooter}
+    description="Пример композиции строительной компании."
+    copyright="© 2026 Пример композиции"
+    legal={[{ label: 'О примере', href: '#about' }]}
+    legalLabel="О демонстрации"
+  >
+    <p slot="extra">Дополнительная зона подвала без интеграции подписки.</p>
+  </Footer>
+</BaseLayout>

@@ -1,0 +1,39 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { Locale } from '@/config/site';
+interface Props extends HTMLAttributes<'nav'> {
+  label: string;
+  items: readonly {
+    locale: Locale;
+    label: string;
+    shortLabel?: string;
+    href: string;
+    current: boolean;
+  }[];
+}
+const { label, items, class: className, ...rest } = Astro.props;
+---
+
+<nav {...rest} aria-label={label} class:list={['text-caption', className]}>
+  <ul class="flex flex-wrap gap-4">
+    {items.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          aria-label={
+            item.shortLabel ? `${item.shortLabel} (${item.label})` : undefined
+          }
+          lang={item.locale}
+          hreflang={item.locale}
+          aria-current={item.current ? 'page' : undefined}
+          class:list={[
+            'underline underline-offset-4',
+            { 'font-bold': item.current },
+          ]}
+        >
+          {item.shortLabel ?? item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

@@ -1,0 +1,62 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'centered' | 'split';
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+}
+const {
+  layout = 'centered',
+  title,
+  description,
+  level = 2,
+  class: className,
+  ...rest
+}: Props = Astro.props;
+---
+
+<section {...rest} class:list={['cta', className]} data-layout={layout}>
+  <Container
+    class:list={[
+      'grid items-center gap-panel',
+      layout === 'split' ? 'lg:grid-cols-2' : 'justify-items-center',
+    ]}
+  >
+    <SectionHeading
+      {title}
+      {description}
+      {level}
+      align={layout === 'centered' ? 'center' : 'start'}
+    >
+      <slot name="title" slot="title">
+        {title}
+      </slot>
+      <slot name="description" slot="description">
+        {description && <p>{description}</p>}
+      </slot>
+    </SectionHeading>
+    {Astro.slots.has('actions') && (
+      <div
+        class:list={[
+          'flex min-w-0 flex-wrap gap-4',
+          { 'lg:justify-end': layout === 'split' },
+        ]}
+      >
+        <slot name="actions" />
+      </div>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .cta {
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      padding-block: var(--section-space);
+    }
+  }
+</style>

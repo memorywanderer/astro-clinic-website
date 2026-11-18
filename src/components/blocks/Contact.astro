@@ -1,0 +1,72 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import ContactDetails, { type ContactInfo } from '../ui/ContactDetails.astro';
+import { hasContactInfo } from '@/lib/contact';
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'details' | 'split' | 'formFocused';
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  details?: ContactInfo;
+}
+const {
+  layout = 'details',
+  title,
+  description,
+  level = 2,
+  details,
+  class: className,
+  ...rest
+}: Props = Astro.props;
+const hasForm = Astro.slots.has('form');
+const hasDetails = hasContactInfo(details);
+---
+
+<section {...rest} class:list={['contact', className]} data-layout={layout}>
+  <Container
+    width={layout === 'formFocused' ? 'reading' : 'content'}
+    class="grid gap-panel"
+  >
+    <slot name="heading">
+      {title && <SectionHeading {title} {description} {level} />}
+    </slot>
+    {(hasDetails || hasForm) && (
+      <div
+        class:list={[
+          'grid items-start gap-panel',
+          { 'lg:grid-cols-2': layout === 'split' && hasForm && hasDetails },
+        ]}
+      >
+        {layout === 'formFocused' && hasForm && (
+          <div class="min-w-0">
+            <slot name="form" />
+          </div>
+        )}
+        {hasDetails && details && <ContactDetails {details} />}
+        {layout !== 'formFocused' && hasForm && (
+          <div class="min-w-0">
+            <slot name="form" />
+          </div>
+        )}
+      </div>
+    )}
+    {Astro.slots.has('actions') && (
+      <div class="flex flex-wrap gap-4">
+        <slot name="actions" />
+      </div>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .contact {
+      padding-block: var(--section-space);
+      overflow-wrap: anywhere;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+    }
+  }
+</style>

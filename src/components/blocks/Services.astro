@@ -1,0 +1,132 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Card from '../ui/Card.astro';
+import Media, { type MediaSource } from '../ui/Media.astro';
+import type { NavigationLink } from '../ui/navigation';
+export interface ServiceItem {
+  id: string;
+  title: string;
+  description?: string;
+  media?: MediaSource;
+  link?: NavigationLink;
+  metadata?: string;
+}
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'grid' | 'list' | 'featured';
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5;
+  itemLevel?: 2 | 3 | 4 | 5 | 6;
+  items: readonly ServiceItem[];
+  /** Prioritize only the first image when the composition places it near LCP. */
+  mediaPriority?: boolean;
+}
+const {
+  layout = 'grid',
+  title,
+  description,
+  level = 2,
+  itemLevel: requestedItemLevel,
+  items,
+  mediaPriority = false,
+  class: className,
+  ...rest
+}: Props = Astro.props;
+const itemLevel =
+  requestedItemLevel ??
+  (title || Astro.slots.has('heading') ? level + 1 : level);
+const Heading = `h${itemLevel}` as `h${1 | 2 | 3 | 4 | 5 | 6}`;
+const firstMediaIndex = items.findIndex((item) => !!item.media);
+---
+
+<section {...rest} class:list={['services', className]} data-layout={layout}>
+  <Container class="grid gap-panel">
+    <slot name="heading">
+      {title && <SectionHeading {title} {description} {level} />}
+    </slot>
+    {items.length > 0 && (
+      <ul
+        class:list={[
+          'grid gap-panel',
+          { 'md:grid-cols-2 lg:grid-cols-3': layout !== 'list' },
+        ]}
+      >
+        {items.map((item: ServiceItem, index: number) => (
+          <li
+            class:list={[
+              'min-w-0',
+              {
+                'md:col-span-2 md:row-span-2':
+                  layout === 'featured' && index === 0,
+              },
+            ]}
+            data-item={item.id}
+          >
+            <Card
+              variant={
+                layout === 'featured' && index === 0 ? 'elevated' : 'outlined'
+              }
+              class:list={[
+                'h-full content-start',
+                { 'md:grid-cols-3': layout === 'list' && !!item.media },
+              ]}
+            >
+              {item.media && (
+                <Media
+                  media={item.media}
+                  priority={mediaPriority && index === firstMediaIndex}
+                  sizes={
+                    layout === 'list'
+                      ? '(min-width: 48rem) 25vw, 100vw'
+                      : layout === 'featured' && index === 0
+                        ? '(min-width: 48rem) 66vw, 100vw'
+                        : '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw'
+                  }
+                />
+              )}
+              <div
+                class:list={[
+                  'grid min-w-0 content-start gap-4',
+                  { 'md:col-span-2': layout === 'list' && !!item.media },
+                ]}
+              >
+                <Heading
+                  class:list={[
+                    layout === 'featured' && index === 0
+                      ? 'text-heading lg:text-display'
+                      : 'text-heading',
+                  ]}
+                >
+                  {item.title}
+                </Heading>
+                {item.description && (
+                  <p class="text-muted-foreground">{item.description}</p>
+                )}
+                {item.metadata && <p class="text-caption">{item.metadata}</p>}
+                {item.link && (
+                  <a
+                    href={item.link.href}
+                    class="w-fit text-primary underline underline-offset-4"
+                  >
+                    {item.link.label}
+                  </a>
+                )}
+              </div>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .services {
+      padding-block: var(--section-space);
+      overflow-wrap: anywhere;
+    }
+  }
+</style>

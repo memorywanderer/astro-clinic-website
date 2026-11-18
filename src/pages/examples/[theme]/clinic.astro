@@ -1,0 +1,94 @@
+---
+import { themes, type Theme } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Services from '@/components/blocks/Services.astro';
+import About from '@/components/blocks/About.astro';
+import Testimonials from '@/components/blocks/Testimonials.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import Contact from '@/components/blocks/Contact.astro';
+import {
+  exampleNavigation,
+  exampleFooter,
+  clinicServices,
+} from '@/content/business-examples';
+import { quotations, quoteNotice, faqItems } from '@/content/business-showcase';
+import { studioMedia } from '@/content/component-showcase';
+export function getStaticPaths() {
+  return import.meta.env.DEV
+    ? themes.map((theme) => ({ params: { theme }, props: { theme } }))
+    : [];
+}
+interface Props {
+  theme: Theme;
+}
+const { theme } = Astro.props;
+---
+
+<BaseLayout title="Пример клиники · Phase 03.1" {theme}>
+  <Header
+    id="clinic-header"
+    name="Клиника · образец"
+    homeHref="#start"
+    items={exampleNavigation}
+    navigationLabel="Разделы примера клиники"
+    menuLabel="Меню"
+  >
+    <a slot="actions" href="#contact" class="text-primary underline">
+      Контактная секция
+    </a>
+  </Header>
+  <main>
+    <p class="page-container py-4 text-caption">
+      Демонстрация компонентов. Это не медицинская организация. Услуги и запись
+      недоступны.
+    </p>
+    <Hero
+      id="start"
+      layout="split"
+      title="Внимание к каждому вопросу"
+      description="Пример спокойного сайта клиники с понятной структурой направлений."
+      eyebrow="Пример A"
+      media={studioMedia}
+      mediaPriority
+    >
+      <a slot="actions" href="#services" class="text-primary underline">
+        Посмотреть направления
+      </a>
+    </Hero>
+    <Services id="services" title="Направления" items={clinicServices} />
+    <About
+      id="about"
+      layout="split"
+      title="Сначала — понятный разговор"
+      media={studioMedia}
+      mediaPlacement="start"
+    >
+      <p slot="description">
+        Рассказ о подходе через богатый текст. Реальные сведения о специалистах
+        и организации передаются в компонент извне.
+      </p>
+    </About>
+    <Testimonials
+      layout="grid"
+      title="Образец оформления цитат"
+      description={quoteNotice}
+      items={quotations}
+    />
+    <FAQ id="faq" title="Перед знакомством" items={faqItems} />
+    <Contact
+      id="contact"
+      title="Контактная секция"
+      description="В реальном проекте здесь будут проверенные контакты организации."
+      details={{ hours: 'Пример не принимает обращения. Запись недоступна.' }}
+    />
+  </main>
+  <Footer
+    name="Клиника · образец"
+    homeHref="#start"
+    groups={exampleFooter}
+    copyright="© 2026 Пример композиции"
+  />
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ReviewSummary from '@/components/business/ReviewSummary.astro';
+import Credentials from '@/components/business/Credentials.astro';
+import BusinessActionLink from '@/components/business/BusinessActionLink.astro';
+import ClinicIcon from './ClinicIcon.astro';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+interface Props {
+  content: ClinicHomeContent;
+}
+const { content: c } = Astro.props;
+---
+
+<section id="reviews" class="clinic-reviews section-space">
+  <Container>
+    <SectionHeading title={c.final.reputation} />
+    <div class="reputation-layout">
+      <div class="reputation-card">
+        <div class="reputation-platform">
+          <img src="/brands/2gis.png" width="40" height="40" alt="" />
+          <strong>2ГИС</strong>
+          <span>{c.ui.demoShort}</span>
+        </div>
+        <p class="reputation-value">{c.final.ratingState}</p>
+        <p>{c.final.ratingNote}</p>
+        <ReviewSummary source={c.reviewSource} />
+      </div>
+      <div class="reputation-evidence">
+        <ClinicIcon name="license" />
+        <h3>{c.final.license}</h3>
+        <p>{c.final.licenseNote}</p>
+        <a href="#credentials">{c.final.license}</a>
+        <Credentials items={c.trust.credentials ?? []} />
+      </div>
+    </div>
+    <p id="review-help" class="text-caption review-help">
+      {c.selectedReviews.length ? c.final.reviewSourceHelp : c.final.reviewHelp}
+    </p>
+    <div
+      class="review-grid"
+      data-review-carousel
+      tabindex="0"
+      role="region"
+      aria-label={c.final.reputation}
+      aria-describedby="review-help"
+    >
+      {c.selectedReviews.map((review) => (
+        <article class="review-example">
+          <h3>{review.author}</h3>
+          {review.rating !== undefined && <p>{review.rating} / 5</p>}
+          <p>{review.text}</p>
+          <BusinessActionLink
+            class="review-source"
+            action={review.original}
+            presentation="text"
+          />
+        </article>
+      ))}
+      {c.selectedReviews.length === 0 &&
+        c.final.reviews.map((item) => (
+          <article class="review-example">
+            <span class="sample-label">{c.final.sample}</span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+            <p class="review-source">2ГИС · {c.final.reviewSource}</p>
+          </article>
+        ))}
+    </div>
+  </Container>
+</section>

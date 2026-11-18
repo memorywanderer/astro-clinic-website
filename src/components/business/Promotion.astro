@@ -1,0 +1,66 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { PromotionInfo } from '@/content/business';
+import { isCurrent } from '@/lib/business/formatting';
+import Media from '@/components/ui/Media.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import PriceDisplay from './PriceDisplay.astro';
+import BusinessActionLink from './BusinessActionLink.astro';
+interface Props extends HTMLAttributes<'section'> {
+  promotion?: PromotionInfo;
+  layout?: 'banner' | 'split' | 'card';
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+}
+const {
+  promotion,
+  layout = 'banner',
+  level = 2,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{promotion?.title.trim() && isCurrent(promotion) && (
+  <section
+    {...rest}
+    class:list={[
+      'promotion bg-secondary text-secondary-foreground rounded-md p-panel',
+      className,
+    ]}
+    data-layout={layout}
+  >
+    <div class="grid min-w-0 gap-4">
+      <SectionHeading
+        title={promotion.title}
+        description={promotion.description}
+        {level}
+      />
+      {promotion.discount && <p class="font-bold">{promotion.discount}</p>}
+      <PriceDisplay price={promotion.price} />
+      {promotion.validityLabel && <p>{promotion.validityLabel}</p>}
+      {promotion.terms && <p class="text-caption">{promotion.terms}</p>}
+      <div>
+        <BusinessActionLink action={promotion.action} />
+      </div>
+    </div>
+    {promotion.media && <Media media={promotion.media} />}
+  </section>
+)}
+<style>
+  @layer components {
+    .promotion {
+      display: grid;
+      gap: var(--panel-space);
+      overflow-wrap: anywhere;
+    }
+    .promotion[data-layout='card'] {
+      max-width: var(--reading-width);
+    }
+    @media (min-width: 48rem) {
+      .promotion[data-layout='split']:has(img) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: center;
+      }
+    }
+  }
+</style>

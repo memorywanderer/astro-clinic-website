@@ -1,0 +1,100 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import Card from '../ui/Card.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Media, { type MediaSource } from '../ui/Media.astro';
+
+export interface FeatureItem {
+  title: string;
+  description?: string;
+  media?: MediaSource;
+}
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'grid' | 'alternating';
+  items: readonly FeatureItem[];
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5;
+  itemLevel?: 2 | 3 | 4 | 5 | 6;
+}
+const {
+  layout = 'grid',
+  items,
+  title,
+  description,
+  level = 2,
+  itemLevel: requestedItemLevel,
+  class: className,
+  ...rest
+}: Props = Astro.props;
+const itemLevel =
+  requestedItemLevel ??
+  (title || Astro.slots.has('heading') ? level + 1 : level);
+const ItemHeading = `h${itemLevel}` as `h${1 | 2 | 3 | 4 | 5 | 6}`;
+---
+
+<section {...rest} class:list={['features', className]} data-layout={layout}>
+  <Container class="grid gap-panel">
+    <slot name="heading">
+      {title && <SectionHeading {title} {description} {level} />}
+    </slot>
+    {items.length > 0 && (
+      <ul
+        class:list={[
+          'grid gap-panel',
+          { 'md:grid-cols-2 lg:grid-cols-3': layout === 'grid' },
+        ]}
+      >
+        {items.map((item: FeatureItem, index: number) => (
+          <li class="min-w-0">
+            {layout === 'grid' ? (
+              <Card variant="outlined" class="h-full content-start">
+                {item.media && (
+                  <Media
+                    media={item.media}
+                    sizes="(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw"
+                  />
+                )}
+                <ItemHeading class="text-heading">{item.title}</ItemHeading>
+                {item.description && (
+                  <p class="text-muted-foreground">{item.description}</p>
+                )}
+              </Card>
+            ) : (
+              <div
+                class:list={[
+                  'grid items-center gap-panel',
+                  { 'lg:grid-cols-2': !!item.media },
+                ]}
+              >
+                {item.media && (
+                  <Media
+                    media={item.media}
+                    class:list={[{ 'lg:order-2': index % 2 === 1 }]}
+                  />
+                )}
+                <div class="grid min-w-0 gap-4">
+                  <ItemHeading class="text-heading">{item.title}</ItemHeading>
+                  {item.description && (
+                    <p class="max-w-reading text-muted-foreground">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .features {
+      padding-block: var(--section-space);
+    }
+  }
+</style>

@@ -1,0 +1,276 @@
+---
+import ClinicReputation from './ClinicReputation.astro';
+import ClinicFooter from './ClinicFooter.astro';
+import ClinicPromotions from './ClinicPromotions.astro';
+import ClinicDialogs from './ClinicDialogs.astro';
+import { clinic } from '@/config/clinic';
+import { serializeStructuredData } from '@/lib/seo/structured-data';
+import Header from '@/components/layout/Header.astro';
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import About from '@/components/blocks/About.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Media from '@/components/ui/Media.astro';
+import BusinessActionLink from '@/components/business/BusinessActionLink.astro';
+import ContactActions from '@/components/business/ContactActions.astro';
+import FloatingContact from '@/components/business/FloatingContact.astro';
+import SpecialistsPreview from './SpecialistsPreview.astro';
+import ClinicPricing from './ClinicPricing.astro';
+import ClinicContact from './ClinicContact.astro';
+import ClinicIcon from './ClinicIcon.astro';
+import ClinicInteractions from './ClinicInteractions.astro';
+import Motion from '@/components/motion/Motion.astro';
+import { getClinicHome } from '@/content/clinic-home';
+import { localeLabels, type Locale } from '@/config/site';
+import { availableTranslations, localizedPath } from '@/i18n/routes';
+import { t } from '@/i18n/translations';
+import '@/styles/clinic-fonts.css';
+import '@/styles/clinic.css';
+import '@/styles/clinic-polish.css';
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const c = getClinicHome(locale);
+const homeHref = localizedPath('home', locale)!;
+const languages = availableTranslations('home').map(
+  ({ locale: language, href }) => ({
+    locale: language,
+    label: localeLabels[language],
+    shortLabel: language === 'ru' ? 'РУ' : 'ҚҚ',
+    href,
+    current: language === locale,
+  }),
+);
+---
+
+<Motion />
+<ClinicInteractions />
+<a class="clinic-skip" href="#main-content">
+  {c.skip}
+</a>
+
+<div class="clinic-context clinic-topline">
+  <Container class="clinic-context__inner">
+    <strong class="clinic-demo-ribbon" title={c.demo}>
+      {c.ui.demoShort}
+    </strong>
+    <a href={c.contactActions[1].href}>
+      <ClinicIcon name="phone" />
+      {clinic.phone}
+      <small> · {c.ui.phoneExample}</small>
+    </a>
+    <a class="header-whatsapp" href={c.contactActions[0].href}>
+      <ClinicIcon name="whatsapp" />
+      WhatsApp
+    </a>
+    <span class="header-hours">
+      <ClinicIcon name="clock" />
+      {c.contact.schedule.rows[0].label}{' '}
+      {c.contact.schedule.rows[0].intervals
+        .map(({ start, end }) => `${start}–${end}`)
+        .join(', ')}{' '}
+      · {c.ui.demoShort}
+    </span>
+  </Container>
+</div>
+<span
+  class="header-sentinel"
+  data-clinic-header-sentinel
+  aria-hidden="true"
+></span>
+<div class="clinic-sticky" data-clinic-sticky>
+  <Header
+    id="site-header"
+    class="clinic-header"
+    name={c.name}
+    {homeHref}
+    items={c.navigation}
+    navigationLabel={t(locale, 'nav.main')}
+    menuLabel={t(locale, 'nav.menu')}
+  >
+    <span slot="logo" class="clinic-wordmark">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <path d="M8 9v12c0 8 5 12 12 12s12-4 12-12V9M8 19c8 0 12-4 12-12 0 8 4 12 12 12" />
+      </svg>
+      <span>
+        {c.name}
+        <small>{c.descriptor}</small>
+      </span>
+    </span>
+    <LanguageSwitcher
+      slot="language"
+      class="clinic-language"
+      label={t(locale, 'language.label')}
+      items={languages}
+    />
+    <BusinessActionLink
+      slot="actions"
+      action={c.bookingAction}
+      presentation="compact"
+      data-action="header-booking"
+    />
+  </Header>
+</div>
+<main id="main-content" class="clinic-home">
+  <Hero
+    class="clinic-hero"
+    layout="split"
+    title={c.hero.title}
+    description={c.hero.description}
+  >
+    <div slot="actions" class="hero-actions">
+      <ContactActions
+        actions={[c.heroAction, c.pricesLink]}
+        data-action="hero-actions"
+      />
+      <a class="urgent-entry" href="#urgent-demo">
+        {c.urgent}
+      </a>
+      <div class="hero-trust">
+        <a class="hero-reputation" href="#reviews">
+          <img src="/brands/2gis.png" width="28" height="28" alt="" />
+          <span>
+            <strong>2ГИС</strong>
+            <small>
+              {c.final.ratingState} · {c.ui.demoShort}
+            </small>
+          </span>
+        </a>
+        <a href="#credentials">
+          <ClinicIcon name="license" />
+          <span>{c.final.licenseShort}</span>
+        </a>
+        <a href="#payment">
+          <ClinicIcon name="payment" />
+          <span>{c.final.installmentShort}</span>
+        </a>
+      </div>
+    </div>
+    <figure slot="media" class="hero-photo">
+      <Media
+        media={c.heroMedia}
+        priority
+        quality={70}
+        sizes="(min-width: 64rem) 48vw, calc(100vw - 40px)"
+      />
+      <figcaption>{c.imageLabel}</figcaption>
+    </figure>
+  </Hero>
+  <section id="treatments" class="service-discovery">
+    <Container>
+      <h2>{c.discoveryTitle}</h2>
+      <ul>
+        {c.treatments.map((item) => (
+          <li>
+            <a class="service-tile" href={`#price-${item.id}`}>
+              <ClinicIcon name={item.id} />
+              <span class="service-tile__label">{item.name}</span>
+              <ClinicIcon name="arrow" class="service-tile__arrow" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </section>
+  <ClinicPricing content={c} />
+  <About
+    id="clinic"
+    class="clinic-introduction"
+    layout="split"
+    mediaPlacement="start"
+    title={c.about.title}
+  >
+    <div slot="description">
+      <p>{c.about.description}</p>
+      <ul class="clinic-checklist">
+        {c.final.advantages.map((point) => (
+          <li>
+            <ClinicIcon name="check" />
+            {point}
+          </li>
+        ))}
+      </ul>
+      <p class="text-caption">{c.final.aboutNote}</p>
+      <div id="credentials" class="credential-note">
+        <h3>{c.final.license}</h3>
+        <p>{c.final.licenseNote}</p>
+      </div>
+    </div>
+    <figure
+      slot="media"
+      class="introduction-photo"
+      data-motion="scale"
+      style="--motion-delay: 200ms; --motion-duration: 800ms;"
+    >
+      <Media
+        media={c.aboutMedia}
+        sizes="(min-width: 64rem) 43vw, calc(100vw - 40px)"
+      />
+      <figcaption>{c.imageLabel}</figcaption>
+    </figure>
+    <BusinessActionLink
+      slot="actions"
+      action={{ label: c.final.process, href: '#how-we-work', external: false }}
+      presentation="text"
+    />
+  </About>
+  <SpecialistsPreview content={c} />
+  <ClinicReputation content={c} />
+  <section id="how-we-work" class="clinic-process section-space">
+    <Container>
+      <SectionHeading
+        title={c.final.process}
+        description={c.final.processNote}
+      />
+      <ol>
+        {c.final.steps.map((step, index) => (
+          <li>
+            <span aria-hidden="true">{index + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.description}</p>
+          </li>
+        ))}
+      </ol>
+    </Container>
+  </section>
+  <ClinicPromotions content={c} />
+  <FAQ
+    id="questions"
+    class="clinic-faq"
+    title={c.faq.title}
+    items={c.faq.items}
+  />
+  <ClinicContact content={c} />
+</main>
+<ClinicFooter content={c} homeHref={homeHref} />
+<FloatingContact
+  actions={c.contactActions}
+  layout="group"
+  visibility="always"
+  class="clinic-floating"
+  aria-label={c.contact.title}
+>
+  <ClinicIcon slot="icon-0" name={c.contactIcons[0]} />
+  {c.contactActions.length > 1 && (
+    <ClinicIcon slot="icon-1" name={c.contactIcons[1]} />
+  )}
+</FloatingContact>
+
+<ClinicDialogs content={c} />
+<script
+  type="application/ld+json"
+  set:html={serializeStructuredData([
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: c.faq.items.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    },
+  ])}
+/>

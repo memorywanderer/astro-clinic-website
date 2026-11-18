@@ -1,0 +1,51 @@
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/l/font?kit=o-0bIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjc1azPMlCDFgVUoAwYbtBt-GXB-VZv-YuXzKCqLVQgrMGuXPnvutXLpzMyNt8Nw_2ZhZ2ZlIp7fdYFpKvurWzxVW4lzmpbryLC4HfZgvtXSr9l3R0ne-RnNgnwL8-H1p9CS_Iz4D2bkcEwdud3tuuPXiiG28qXI34CMLXJeHS39Fnh04OKREdP_RaRnjzyE6bOP_bToXZJ2BjwolJr1jUuSllX25KsYZLPCJHJDS74Ln7HIALOXBtp2pPc_alLTWzAGe_ctQgem8WHd_JTvR7c2W_udX81XpkrNvYVQSEdoa0AMpD0MjiH8mSXBblk7YqIzHw2_hwrLUYBGtiSBEn5vvYfeaGvWyhLX_oTWSC9HnywJ3zWi4U3egV6lo_N8DQksyVQi0kbRYxFXVgvJtzH3t1Qdb8EBaJNVIbrnlgiWOEfU4kutbE8KMG5aw3ra1mLwyPbHvsVq_DP7tiG2xY3M5f-4qppv6aDIf1VFuP2NE0OrFhqlDjt6JffvXvfHW8ZlleekviG5oSHhpTGRvk7gy0&skey=2b960fe17823056f&v=v42)
+    format('woff2');
+  unicode-range:
+    U+20-21, U+28-29, U+2b-3b, U+3f, U+41-5b, U+5d, U+61-7a, U+a9, U+ab, U+bb,
+    U+c4, U+cb, U+cf, U+d6, U+dc, U+e4, U+eb, U+ef, U+f6, U+fc, U+ff, U+102-103,
+    U+114-115, U+11e-11f, U+12c-12d, U+14e-14f, U+16c-16d, U+178, U+306, U+308,
+    U+401, U+406-407, U+40e, U+410-44f, U+451, U+456-457, U+45e, U+492-493,
+    U+49a-49b, U+4a2-4a3, U+4ae-4b1, U+4ba-4bb, U+4c1-4c2, U+4d0-4d3, U+4d6-4df,
+    U+4e4-4ed, U+4f0-4f1, U+4f4-4f5, U+4f8-4f9, U+1e26-1e27, U+1e84-1e85,
+    U+1e8c-1e8d, U+1e97, U+2013-2014, U+2026;
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/l/font?kit=o-0bIpQlx3QUlC5A4PNB6Ryti20_6n1iPHjc1azPMlCDFgVUoAwYbtBt-GXB-VZv-YuXzKCqLVQgrMGuXPnvutXLpzMyNt8Nw_2ZhZ2ZlIp7fdYFpKvurWzxVW4lzmpbryLC4HfZgvtXSr9l3R0ne-RnNgnwL8-H1p9CS_Iz4D2bkcEwdud3tuuPXiiG28qXI34CMLXJeHS39Fnh04OKREdP_RaRnjzyE6bOP_bToXZJ2BjwolJr1jUuSllX25KsYZLPCJHJDS74Ln7HIALOXBtp2pPc_alLTWzAGe_ctQgem8WHd_JTvR7c2W_udX81XpkrNvYVQSEdoa0AMpD0MjiH8mSXBblk7YqIzHw2_hwrLUYBGtiSBEn5vvYfeaGvWyhLX_oTWSC9HnywJ3zWi4U3egV6lo_N8DQksyVQi0kbRYxFXVgvJtzH3t1Qdb8EBaJNVIbrnlgiWOEfU4kutbE8KMG5aw3ra1mLwyPbHvsVq_DP7tiG2xY3M5f-4qppv6aDIf1VFuP2NE0OrFhqlDjt6JffvXvfHW8ZlleekviG5oSHhpTGRvk7gy0&skey=2b960fe17823056f&v=v42)
+    format('woff2');
+  unicode-range:
+    U+20-21, U+28-29, U+2b-3b, U+3f, U+41-5b, U+5d, U+61-7a, U+a9, U+ab, U+bb,
+    U+c4, U+cb, U+cf, U+d6, U+dc, U+e4, U+eb, U+ef, U+f6, U+fc, U+ff, U+102-103,
+    U+114-115, U+11e-11f, U+12c-12d, U+14e-14f, U+16c-16d, U+178, U+306, U+308,
+    U+401, U+406-407, U+40e, U+410-44f, U+451, U+456-457, U+45e, U+492-493,
+    U+49a-49b, U+4a2-4a3, U+4ae-4b1, U+4ba-4bb, U+4c1-4c2, U+4d0-4d3, U+4d6-4df,
+    U+4e4-4ed, U+4f0-4f1, U+4f4-4f5, U+4f8-4f9, U+1e26-1e27, U+1e84-1e85,
+    U+1e8c-1e8d, U+1e97, U+2013-2014, U+2026;
+}
+@font-face {
+  font-family: 'Noto Sans Display';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/l/font?kit=RLpbK4fy6r6tOBEJg0IAKzqdFZVZxpMkXJMhnB9XjO1o90LuV-PT4Doq_AKp_3cKVTSIUirKhEoMk5khY7wrfd6Z9kqXgFGekw34HyZRN4qq2arRZesiWJG1kWCAsQ7WQvrqXqtdKo6E6jt55NWws7MKvOH7_g2tPb0NdV0VI5hTKOdI0QXD9qqV_OuFTir8CV69pp8fdjHbB_b6ArXqf75fOlBQnLnRSarUMq5p_ljaTSiVpiFaXRr1vSSvMWiHKC6ne0a4gAr_e99RcG8BUSgiFjxnU9WaSSVN2VJsDLVjEcq6xwwyIswE-q6ES9wAf06S06PcjYhKwkIFSM2T1_D8CXMKmNphqP8jmOnKagfuhZDTcaRLPWTb9L0O56O1BnE379LWaOrrcNWfO748zZpIEkQC2f2soYRF4M9xRAE8vwzTEeLmpLvzEsKWAyR4kge-zH0-RXKteFnzTHAHwLw_Rq-tUrXwUXLw06r3CZzYFE6rQUuzqXwY3bwtKtiAXOWhStLy-8JjHliEeUlxPoTn9DMdE-EFigg2dAbLvAsuzlheMNTBCIvLtC9NyW5r5ruTG5Z_77v8drCny5N4kIg&skey=6b3418ea71d38bb4&v=v30)
+    format('woff2');
+  unicode-range:
+    U+20-21, U+28-29, U+2b-3b, U+3f, U+41-5b, U+5d, U+61-7a, U+a9, U+ab, U+bb,
+    U+c4, U+cb, U+cf, U+d6, U+dc, U+e4, U+eb, U+ef, U+f6, U+fc, U+ff, U+102-103,
+    U+114-115, U+11e-11f, U+12c-12d, U+14e-14f, U+16c-16d, U+178, U+306, U+308,
+    U+401, U+406-407, U+40e, U+410-44f, U+451, U+456-457, U+45e, U+492-493,
+    U+49a-49b, U+4a2-4a3, U+4ae-4b1, U+4ba-4bb, U+4c1-4c2, U+4d0-4d3, U+4d6-4df,
+    U+4e4-4ed, U+4f0-4f1, U+4f4-4f5, U+4f8-4f9, U+1e26-1e27, U+1e84-1e85,
+    U+1e8c-1e8d, U+1e97, U+2013-2014, U+2026;
+}

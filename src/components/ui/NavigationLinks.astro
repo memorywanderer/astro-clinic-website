@@ -1,0 +1,81 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import CaretDown from '~icons/ph/caret-down';
+import type { NavigationItem } from './navigation';
+interface Props extends HTMLAttributes<'ul'> {
+  items: readonly NavigationItem[];
+}
+const { items, class: className, ...rest } = Astro.props;
+---
+
+<ul
+  {...rest}
+  class:list={['navigation-links flex flex-wrap gap-x-6 gap-y-3', className]}
+>
+  {items.map((item) => (
+    <li class="min-w-0">
+      {item.children?.length ? (
+        <details
+          open={item.current || item.children.some((child) => child.current)}
+        >
+          <summary class="cursor-pointer py-2 font-bold">
+            {item.label}
+            <CaretDown class="navigation-caret" aria-hidden="true" />
+          </summary>
+          <ul class="grid gap-2 border-s-2 ps-4">
+            <li>
+              <a
+                href={item.href}
+                aria-current={item.current ? 'page' : undefined}
+                class="inline-block py-2 text-primary underline underline-offset-4"
+              >
+                {item.label}
+              </a>
+            </li>
+            {item.children.map((child) => (
+              <li>
+                <a
+                  href={child.href}
+                  aria-current={child.current ? 'page' : undefined}
+                  class="inline-block py-2 text-primary underline underline-offset-4"
+                >
+                  {child.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : (
+        <a
+          href={item.href}
+          aria-current={item.current ? 'page' : undefined}
+          class="inline-block py-2 text-primary underline underline-offset-4"
+        >
+          {item.label}
+        </a>
+      )}
+    </li>
+  ))}
+</ul>
+
+<style>
+  @layer components {
+    .navigation-links summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+    }
+    .navigation-links summary::-webkit-details-marker {
+      display: none;
+    }
+    .navigation-caret {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+    }
+    .navigation-links details[open] > summary > .navigation-caret {
+      transform: rotate(180deg);
+    }
+  }
+</style>

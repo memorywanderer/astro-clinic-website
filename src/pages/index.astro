@@ -1,0 +1,13 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { localizedPath } from '@/i18n/routes';
+import { t } from '@/i18n/translations';
+const href = localizedPath('home', 'ru')!;
+---
+
+<BaseLayout title={t('ru', 'nav.home')}>
+  <meta slot="head" http-equiv="refresh" content={`0;url=${href}`} />
+  <main class="page-container">
+    <a href={href}>{t('ru', 'nav.home')}</a>
+  </main>
+</BaseLayout>

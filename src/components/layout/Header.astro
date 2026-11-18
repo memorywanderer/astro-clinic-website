@@ -1,0 +1,273 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import MenuIcon from '~icons/ph/list';
+import CloseIcon from '~icons/ph/x';
+import Container from '../ui/Container.astro';
+import Button from '../ui/button/ButtonRoot.astro';
+import NavigationLinks from '../ui/NavigationLinks.astro';
+import Media, { type MediaSource } from '../ui/Media.astro';
+import type { NavigationItem } from '../ui/navigation';
+interface Props extends HTMLAttributes<'header'> {
+  id: string;
+  layout?: 'standard' | 'centered' | 'overlay';
+  name: string;
+  homeHref: string;
+  items: readonly NavigationItem[];
+  navigationLabel: string;
+  menuLabel: string;
+  logo?: MediaSource;
+}
+const {
+  id,
+  layout = 'standard',
+  name,
+  homeHref,
+  items,
+  navigationLabel,
+  menuLabel,
+  logo,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<header
+  {...rest}
+  {id}
+  class:list={['site-header', className]}
+  data-layout={layout}
+>
+  <slot name="announcement" />
+  <Container class="header-inner grid items-center gap-4 py-4">
+    <a
+      href={homeHref}
+      class="header-brand min-w-0 font-display text-heading"
+      aria-label={name}
+    >
+      <slot name="logo">
+        {logo ? <Media media={logo} sizes="12rem" class="max-w-48" /> : name}
+      </slot>
+    </a>
+    {items.length > 0 && (
+      <nav class="header-desktop" aria-label={navigationLabel}>
+        <NavigationLinks {items} />
+      </nav>
+    )}
+    {(Astro.slots.has('actions') || Astro.slots.has('language')) && (
+      <div class="header-actions flex flex-wrap items-center gap-4">
+        <slot name="language" />
+        <slot name="actions" />
+      </div>
+    )}
+    {(Astro.slots.has('contact') || Astro.slots.has('social')) && (
+      <div class="header-business header-business-desktop flex-wrap items-center gap-4">
+        <slot name="contact" />
+        <slot name="social" />
+      </div>
+    )}
+    {(items.length > 0 ||
+      Astro.slots.has('contact') ||
+      Astro.slots.has('social')) && (
+      <div class="header-mobile" data-header-menu data-sw-collapsible>
+        <Button
+          variant="outline"
+          hidden
+          data-sw-collapsible-trigger
+          aria-controls={`${id}-menu`}
+          aria-expanded="true"
+        >
+          <MenuIcon
+            class="header-menu-icon header-menu-open"
+            aria-hidden="true"
+          />
+          <CloseIcon
+            class="header-menu-icon header-menu-close"
+            aria-hidden="true"
+          />
+          <span class="header-menu-label">{menuLabel}</span>
+        </Button>
+        <div id={`${id}-menu`} data-sw-collapsible-panel>
+          {items.length > 0 && (
+            <nav aria-label={navigationLabel}>
+              <NavigationLinks {items} class="flex-col" />
+            </nav>
+          )}
+          {(Astro.slots.has('contact') || Astro.slots.has('social')) && (
+            <div class="header-business flex flex-wrap gap-4 py-4">
+              <slot name="contact" />
+              <slot name="social" />
+            </div>
+          )}
+        </div>
+      </div>
+    )}
+  </Container>
+  <script is:inline>
+    // Prepare before subsequent page content paints; without JS the panel stays open.
+    // The tiny native fallback also keeps the menu usable if the module cannot load.
+    {
+      const root = document.currentScript
+        .closest('header')
+        ?.querySelector('[data-header-menu]');
+      const toggle = root?.querySelector('[data-sw-collapsible-trigger]');
+      const panel = root?.querySelector('[data-sw-collapsible-panel]');
+      if (root && toggle && panel) {
+        panel.hidden = true;
+        toggle.hidden = false;
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.addEventListener('click', () => {
+          if (root.dataset.headerReady) return;
+          panel.hidden = !panel.hidden;
+          toggle.setAttribute('aria-expanded', String(!panel.hidden));
+        });
+      }
+    }
+  </script>
+</header>
+
+<style>
+  @layer components {
+    .site-header {
+      position: relative;
+      overflow-wrap: anywhere;
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+    .header-desktop {
+      display: none;
+    }
+    .header-mobile {
+      min-width: 0;
+    }
+    .header-business {
+      min-width: 0;
+    }
+    .header-business-desktop {
+      display: none;
+    }
+    .header-mobile > button {
+      gap: 0.5rem;
+    }
+    .header-menu-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      flex-shrink: 0;
+    }
+    .header-menu-close {
+      display: none;
+    }
+    [aria-expanded='true'] > .header-menu-open {
+      display: none;
+    }
+    [aria-expanded='true'] > .header-menu-close {
+      display: block;
+    }
+    .header-mobile [hidden] {
+      display: none;
+    }
+    .site-header[data-layout='centered'] .header-brand {
+      text-align: center;
+    }
+    .site-header[data-layout='overlay'] {
+      position: relative;
+      inset-inline: 0;
+      top: 0;
+      z-index: 10;
+      background: transparent;
+    }
+    .site-header[data-layout='overlay'] .header-inner {
+      background: var(--card);
+      border-radius: var(--radius);
+    }
+    @media (min-width: 64rem) {
+      .site-header[data-layout='overlay'] {
+        position: absolute;
+      }
+      .header-inner {
+        grid-template-columns: auto 1fr auto;
+      }
+      .header-business {
+        grid-column: 1 / -1;
+        justify-content: space-between;
+      }
+      .header-business-desktop {
+        display: flex;
+      }
+      .header-desktop {
+        display: block;
+        justify-self: center;
+      }
+      .header-mobile {
+        display: none;
+      }
+      [data-layout='centered'] .header-inner {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+    }
+  }
+</style>
+
+<script>
+  import { createCollapsible } from '@starwind-ui/runtime/collapsible';
+  import {
+    getAstroInitCandidates,
+    registerAstroControllerLifecycle,
+    trackAstroController,
+  } from '../ui/internal/controller-lifecycle';
+
+  registerAstroControllerLifecycle('SiteHeader', (event) => {
+    for (const root of getAstroInitCandidates(event, '[data-header-menu]')) {
+      if (root.dataset.headerReady) continue;
+      const toggle = root.querySelector<HTMLButtonElement>(
+        '[data-sw-collapsible-trigger]',
+      );
+      if (!toggle) continue;
+      const controller = createCollapsible(root, {
+        defaultOpen:
+          !toggle.hidden && toggle.getAttribute('aria-expanded') === 'true',
+      });
+      const abort = new AbortController();
+      const options = { signal: abort.signal };
+      root.addEventListener(
+        'keydown',
+        (event) => {
+          if (event.key === 'Escape' && controller.getOpen()) {
+            controller.close();
+            toggle.focus();
+          }
+        },
+        options,
+      );
+      root.addEventListener(
+        'click',
+        (event) => {
+          if (event.target instanceof Element && event.target.closest('a'))
+            controller.close();
+        },
+        options,
+      );
+      root.ownerDocument.addEventListener(
+        'pointerdown',
+        (event) => {
+          if (event.target instanceof Node && !root.contains(event.target))
+            controller.close();
+        },
+        options,
+      );
+      toggle.hidden = false;
+      root.dataset.headerReady = 'true';
+      trackAstroController('SiteHeader', root, {
+        destroy() {
+          abort.abort();
+          controller.destroy();
+          toggle.hidden = true;
+          root
+            .querySelector<HTMLElement>('[data-sw-collapsible-panel]')
+            ?.removeAttribute('hidden');
+          delete root.dataset.headerReady;
+        },
+      });
+    }
+  });
+</script>

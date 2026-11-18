@@ -1,0 +1,42 @@
+@layer components {
+  .sw-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 100%;
+    padding: calc(var(--spacing) * 3) calc(var(--spacing) * 6);
+    border: var(--border-width) solid var(--primary);
+    border-radius: var(--radius);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    overflow-wrap: anywhere;
+  }
+  .sw-button:hover {
+    background: var(--primary-accent);
+  }
+  .sw-button[data-variant='secondary'] {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border-color: var(--border);
+  }
+  .sw-button[data-variant='outline'] {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+  .sw-button[data-variant='secondary']:hover,
+  .sw-button[data-variant='outline']:hover {
+    background: var(--accent);
+  }
+  .sw-button[data-size='sm'] {
+    padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  }
+  .sw-button[data-size='lg'] {
+    padding: calc(var(--spacing) * 4) calc(var(--spacing) * 8);
+  }
+  .sw-button[data-disabled] {
+    cursor: not-allowed;
+  }
+}

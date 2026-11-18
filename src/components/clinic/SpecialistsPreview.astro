@@ -1,0 +1,55 @@
+---
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Media from '@/components/ui/Media.astro';
+import BusinessActionLink from '@/components/business/BusinessActionLink.astro';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+interface Props {
+  content: ClinicHomeContent;
+}
+const { content: c } = Astro.props;
+---
+
+<section id="team" class="clinic-team">
+  <Container class="team-layout">
+    <SectionHeading title={c.team.title} description={c.team.description} />
+    <p id="doctor-carousel-help" class="text-caption">
+      {c.ui.carousel}
+    </p>
+    <div
+      class="team-profiles"
+      data-doctor-carousel
+      tabindex="0"
+      role="region"
+      aria-roledescription={c.ui.carouselRole}
+      aria-label={c.team.title}
+      aria-describedby="doctor-carousel-help"
+    >
+      {c.team.items.map((person) => (
+        <article class="team-person" data-booking-context={person.name}>
+          <Media media={person.media} sizes="(min-width: 48rem) 300px, 65vw" />
+          <div class="person-copy">
+            <h3>{person.name}</h3>
+            <p class="person-role">{person.role}</p>
+            <p class="person-note">{person.note}</p>
+            <p class="text-caption">{c.ui.languages}</p>
+            <BusinessActionLink
+              action={{
+                href: '#contact',
+                label: c.final.profileAction,
+                external: false,
+                emphasis: 'primary',
+              }}
+              presentation="button"
+            />
+          </div>
+        </article>
+      ))}
+    </div>
+    <BusinessActionLink
+      class="team-next"
+      action={{ href: '#how-we-work', label: c.final.process, external: false }}
+      presentation="text"
+    />
+  </Container>
+</section>

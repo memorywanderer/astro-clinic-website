@@ -1,0 +1,129 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import CaretDown from '~icons/ph/caret-down';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer?: string;
+}
+export interface FAQGroup {
+  id: string;
+  title: string;
+  items: readonly FAQItem[];
+}
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'accordion' | 'simple' | 'grouped';
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4;
+  items?: readonly FAQItem[];
+  groups?: readonly FAQGroup[];
+  groupLayout?: 'accordion' | 'simple';
+}
+const {
+  layout = 'accordion',
+  title,
+  description,
+  level = 2,
+  items = [],
+  groups = [],
+  groupLayout = 'accordion',
+  class: className,
+  ...rest
+}: Props = Astro.props;
+const hasHeading = !!title || Astro.slots.has('heading');
+const groupLevel = hasHeading ? level + 1 : level;
+const questionLevel =
+  layout === 'grouped' ? groupLevel + 1 : hasHeading ? level + 1 : level;
+const GroupHeading = `h${groupLevel}` as `h${1 | 2 | 3 | 4 | 5}`;
+const QuestionHeading = `h${questionLevel}` as `h${1 | 2 | 3 | 4 | 5 | 6}`;
+const sections: readonly FAQGroup[] =
+  layout === 'grouped'
+    ? groups.filter((group: FAQGroup) => group.items.length)
+    : [{ id: '', title: '', items }];
+const disclosure =
+  layout === 'accordion' ||
+  (layout === 'grouped' && groupLayout === 'accordion');
+---
+
+<section {...rest} class:list={['faq', className]} data-layout={layout}>
+  <Container width="reading" class="grid gap-panel">
+    <slot name="heading">
+      {title && <SectionHeading {title} {description} {level} />}
+    </slot>
+    {sections.map(
+      (group: FAQGroup) =>
+        group.items.length > 0 && (
+          <div class="grid gap-4" data-group={group.id || undefined}>
+            {group.title && (
+              <GroupHeading class="text-heading">{group.title}</GroupHeading>
+            )}
+            {group.items.map((item: FAQItem) =>
+              disclosure ? (
+                <details
+                  class="rounded-md border-hairline bg-card p-panel text-card-foreground"
+                  data-item={item.id}
+                >
+                  <summary class="cursor-pointer">
+                    <QuestionHeading class="inline font-bold">
+                      {item.question}
+                    </QuestionHeading>
+                    <CaretDown class="faq-caret" aria-hidden="true" />
+                  </summary>
+                  <div class="grid gap-4 pt-4">
+                    <slot name={`answer-${item.id}`}>
+                      {item.answer && <p>{item.answer}</p>}
+                    </slot>
+                  </div>
+                </details>
+              ) : (
+                <div
+                  class="grid gap-3 border-b border-border py-4"
+                  data-item={item.id}
+                >
+                  <QuestionHeading class="font-bold">
+                    {item.question}
+                  </QuestionHeading>
+                  <div class="grid gap-4">
+                    <slot name={`answer-${item.id}`}>
+                      {item.answer && <p>{item.answer}</p>}
+                    </slot>
+                  </div>
+                </div>
+              ),
+            )}
+          </div>
+        ),
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .faq {
+      padding-block: var(--section-space);
+      overflow-wrap: anywhere;
+    }
+
+    .faq summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      list-style: none;
+    }
+    .faq summary::-webkit-details-marker {
+      display: none;
+    }
+    .faq-caret {
+      width: 1em;
+      height: 1em;
+      flex-shrink: 0;
+    }
+    .faq details[open] > summary > .faq-caret {
+      transform: rotate(180deg);
+    }
+  }
+</style>

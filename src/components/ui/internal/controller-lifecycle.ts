@@ -1,0 +1,114 @@
+/**
+ * Vendored by the Starwind CLI.
+ * You own this file in your project.
+ */
+
+export const getAstroInitCandidates = (
+  event: Event | undefined,
+  selector: string,
+): HTMLElement[] => {
+  const initRoot =
+    event?.type === 'starwind:init' && event instanceof CustomEvent
+      ? event.detail?.root
+      : undefined;
+  const scopedRoot: Document | DocumentFragment | Element = isQueryableRoot(
+    initRoot,
+  )
+    ? initRoot
+    : document;
+  const candidates = Array.from(
+    scopedRoot.querySelectorAll<HTMLElement>(selector),
+  );
+  if (scopedRoot instanceof Element && scopedRoot.matches(selector)) {
+    candidates.unshift(scopedRoot as HTMLElement);
+  }
+  return candidates;
+};
+const isQueryableRoot = (
+  value: unknown,
+): value is Document | DocumentFragment | Element =>
+  value instanceof Document ||
+  value instanceof DocumentFragment ||
+  value instanceof Element;
+
+type AstroController = {
+  destroy(): void;
+};
+
+type AstroControllerSetup = (event?: Event) => void;
+
+type AstroControllerLifecycle = {
+  controllers: WeakMap<HTMLElement, AstroController>;
+  destroy?: () => void;
+  registered: boolean;
+  roots: Set<HTMLElement>;
+  setup: AstroControllerSetup;
+};
+
+const lifecycles = new Map<string, AstroControllerLifecycle>();
+
+export function registerAstroControllerLifecycle(
+  key: string,
+  setup: AstroControllerSetup,
+  destroy?: () => void,
+): void {
+  const lifecycle = getLifecycle(key);
+  lifecycle.setup = setup;
+  lifecycle.destroy = destroy;
+
+  if (!lifecycle.registered) {
+    lifecycle.registered = true;
+    document.addEventListener('astro:after-swap', () => lifecycle.setup());
+    document.addEventListener('starwind:init', (event) =>
+      lifecycle.setup(event),
+    );
+    document.addEventListener('astro:before-swap', () =>
+      destroyLifecycle(lifecycle),
+    );
+  }
+
+  lifecycle.setup();
+}
+
+export function trackAstroController<T extends AstroController>(
+  key: string,
+  root: HTMLElement,
+  controller: T,
+): T {
+  const lifecycle = getLifecycle(key);
+  const previous = lifecycle.controllers.get(root);
+
+  if (previous && previous !== controller) {
+    previous.destroy();
+  }
+
+  lifecycle.controllers.set(root, controller);
+  lifecycle.roots.add(root);
+  return controller;
+}
+
+function getLifecycle(key: string): AstroControllerLifecycle {
+  const existing = lifecycles.get(key);
+  if (existing) return existing;
+
+  const lifecycle: AstroControllerLifecycle = {
+    controllers: new WeakMap(),
+    registered: false,
+    roots: new Set(),
+    setup: () => {},
+  };
+  lifecycles.set(key, lifecycle);
+  return lifecycle;
+}
+
+function destroyLifecycle(lifecycle: AstroControllerLifecycle): void {
+  if (lifecycle.destroy) {
+    lifecycle.destroy();
+  }
+
+  lifecycle.roots.forEach((root) => {
+    lifecycle.controllers.get(root)?.destroy();
+    lifecycle.controllers.delete(root);
+  });
+  lifecycle.roots.clear();
+}

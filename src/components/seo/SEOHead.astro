@@ -1,0 +1,76 @@
+---
+import type { SEOData } from '@/lib/seo/metadata';
+import { absoluteUrl, canonicalUrl } from '@/lib/seo/metadata';
+import { deployment } from '@/config/site';
+import { serializeStructuredData } from '@/lib/seo/structured-data';
+interface Props {
+  seo: SEOData;
+}
+const { seo } = Astro.props;
+const canonical =
+  seo.canonical && canonicalUrl(seo.canonical, deployment.origin);
+const robots =
+  deployment.profile === 'production' ? seo.robots : 'noindex, nofollow';
+const alternates = robots === 'index, follow' ? seo.alternates : [];
+const locales = { ru: 'ru_RU', kk: 'kk_KZ' };
+---
+
+<title>{seo.title}</title>
+{seo.description && <meta name="description" content={seo.description} />}
+<meta name="robots" content={robots} />
+{canonical && <link rel="canonical" href={canonical} />}
+{alternates.map(({ locale, href }) => (
+  <link
+    rel="alternate"
+    hreflang={locale}
+    href={canonicalUrl(href, deployment.origin)}
+  />
+))}
+{alternates.find((entry) => entry.locale === 'ru') && (
+  <link
+    rel="alternate"
+    hreflang="x-default"
+    href={alternates.find((entry) => entry.locale === 'ru')!.href}
+  />
+)}
+<meta property="og:title" content={seo.title} />
+{seo.description && (
+  <meta property="og:description" content={seo.description} />
+)}
+<meta property="og:type" content="website" />
+{canonical && <meta property="og:url" content={canonical} />}
+<meta property="og:locale" content={locales[seo.locale]} />
+{alternates
+  .filter((entry) => entry.locale !== seo.locale)
+  .map((entry) => (
+    <meta property="og:locale:alternate" content={locales[entry.locale]} />
+  ))}
+<meta
+  name="twitter:card"
+  content={seo.image ? 'summary_large_image' : 'summary'}
+/>
+<meta name="twitter:title" content={seo.title} />
+{seo.description && (
+  <meta name="twitter:description" content={seo.description} />
+)}
+{seo.image && (
+  <>
+    <meta
+      property="og:image"
+      content={absoluteUrl(seo.image.url, deployment.origin)}
+    />
+    <meta property="og:image:alt" content={seo.image.alt} />
+    <meta property="og:image:width" content={String(seo.image.width)} />
+    <meta property="og:image:height" content={String(seo.image.height)} />
+    <meta name="twitter:image" content={seo.image.url} />
+    <meta name="twitter:image:alt" content={seo.image.alt} />
+  </>
+)}
+{deployment.profile === 'production' &&
+  robots === 'index, follow' &&
+  !!seo.structuredData?.length && (
+    <script
+      type="application/ld+json"
+      set:html={serializeStructuredData(seo.structuredData)}
+    />
+  )}

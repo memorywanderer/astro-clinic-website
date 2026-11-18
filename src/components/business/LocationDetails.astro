@@ -1,0 +1,53 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { BusinessLocation } from '@/content/business';
+import Media from '@/components/ui/Media.astro';
+import BusinessActionLink from './BusinessActionLink.astro';
+import ContactActions from './ContactActions.astro';
+import BusinessHours from './BusinessHours.astro';
+interface Props extends HTMLAttributes<'div'> {
+  location?: BusinessLocation;
+  layout?: 'compact' | 'split' | 'detailed';
+}
+const { location, layout = 'compact', class: className, ...rest } = Astro.props;
+---
+
+{location?.address.trim() && (
+  <div
+    {...rest}
+    class:list={['location-details grid gap-6', className]}
+    data-layout={layout}
+  >
+    <div class="grid min-w-0 gap-3">
+      {location.name && <p class="font-bold">{location.name}</p>}
+      <address class="whitespace-pre-line not-italic">
+        {location.address}
+      </address>
+      <BusinessActionLink action={location.phone} presentation="text" />
+      <ContactActions actions={location.maps ?? []} layout="compact" />
+      <BusinessActionLink action={location.directions} presentation="text" />
+      <BusinessHours schedule={location.hours} />
+    </div>
+    {location.media && <Media media={location.media} />}
+  </div>
+)}
+<style>
+  @layer components {
+    .location-details {
+      overflow-wrap: anywhere;
+    }
+    .location-details[data-layout='detailed'] {
+      padding: var(--panel-space);
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      color: var(--card-foreground);
+    }
+    @media (min-width: 48rem) {
+      .location-details[data-layout='split']:has(img) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: center;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+import Container from '@/components/ui/Container.astro';
+import BusinessActionLink from '@/components/business/BusinessActionLink.astro';
+import BusinessHours from '@/components/business/BusinessHours.astro';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+interface Props {
+  content: ClinicHomeContent;
+  homeHref: string;
+}
+const { content: c, homeHref } = Astro.props;
+---
+
+<footer class="site-footer clinic-footer">
+  <Container>
+    <div class="clinic-footer-top">
+      <div class="footer-identity">
+        <a href={homeHref} class="footer-brand">
+          {c.name}
+        </a>
+        <p>{c.descriptor}</p>
+        <BusinessActionLink action={c.bookingAction} />
+        <p class="text-caption">{c.demo}</p>
+      </div>
+      <div class="footer-location">
+        <h2>{c.final.locationGroup}</h2>
+        <div class="footer-contact-actions">
+          {c.contactActions.map((action) => (
+            <BusinessActionLink action={action} presentation="text" />
+          ))}
+        </div>
+        <p>{c.final.addressMissing}</p>
+        <a href="#directions">{c.final.directions}</a>
+      </div>
+      <div class="footer-hours">
+        <h2>{c.contact.hoursTitle}</h2>
+        <BusinessHours schedule={c.contact.schedule} />
+      </div>
+    </div>
+    <div class="clinic-footer-navigation">
+      <nav aria-label={c.final.clinicGroup}>
+        <h2>{c.final.clinicGroup}</h2>
+        <ul>
+          {c.navigation.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <nav aria-label={c.final.serviceGroup}>
+        <h2>{c.final.serviceGroup}</h2>
+        <ul>
+          {c.treatments.map((item) => (
+            <li>
+              <a href={`#price-${item.id}`}>{item.name}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <nav aria-label={c.final.documentGroup}>
+        <h2>{c.final.documentGroup}</h2>
+        <ul>
+          <li>
+            <a href="#credentials">{c.final.license}</a>
+          </li>
+          <li>
+            <a href="#privacy-dialog">{c.final.privacy}</a>
+          </li>
+        </ul>
+        <p class="text-caption">{c.final.licenseNote}</p>
+      </nav>
+    </div>
+    <div class="clinic-footer-bottom">
+      <p>{c.footer.copyright}</p>
+      <p>{c.footer.note}</p>
+    </div>
+  </Container>
+</footer>

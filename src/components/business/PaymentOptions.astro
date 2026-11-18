@@ -1,0 +1,33 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { PaymentOption } from '@/content/business';
+import BusinessActionLink from './BusinessActionLink.astro';
+import Media from '@/components/ui/Media.astro';
+interface Props extends HTMLAttributes<'ul'> {
+  options: readonly PaymentOption[];
+}
+const { options, class: className, ...rest } = Astro.props;
+const visible = options.filter(
+  (option) =>
+    option.verified &&
+    option.name.trim() &&
+    (option.kind !== 'installment' || option.terms?.trim()),
+);
+---
+
+{visible.length > 0 && (
+  <ul {...rest} class:list={['grid gap-4', className]}>
+    {visible.map((option) => (
+      <li
+        class="border-border rounded-md border p-panel"
+        data-payment-kind={option.kind}
+      >
+        {option.media && <Media media={option.media} class="max-w-32" />}
+        <p class="font-bold">{option.name}</p>
+        {option.description && <p>{option.description}</p>}
+        {option.terms && <p class="text-caption">{option.terms}</p>}
+        <BusinessActionLink action={option.link} presentation="text" />
+      </li>
+    ))}
+  </ul>
+)}

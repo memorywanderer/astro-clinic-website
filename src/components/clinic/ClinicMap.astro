@@ -1,0 +1,66 @@
+---
+import { clinicMap } from '@/config/clinic-map';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+import ClinicIcon from './ClinicIcon.astro';
+interface Props {
+  content: ClinicHomeContent;
+}
+const { content: c } = Astro.props;
+---
+
+<div class="demo-map" data-demo-map>
+  <div class="map-stage" data-map-stage>
+    <div class="map-intro">
+      <ClinicIcon name="pin" />
+      <strong>{c.final.mapPlace}</strong>
+      <button
+        class="sw-button"
+        type="button"
+        data-load-map
+        data-embed={clinicMap.embed}
+        data-title={c.final.mapTitle}
+        data-loaded={c.final.mapLoaded}
+        hidden
+      >
+        {c.final.mapLoad}
+      </button>
+      <noscript>
+        <p>{c.final.mapPrivacy}</p>
+      </noscript>
+    </div>
+  </div>
+  <p class="text-caption" data-map-status aria-live="polite">
+    {c.final.mapPrivacy}
+  </p>
+  <a
+    id="map-2gis"
+    href={clinicMap.external}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    {c.final.directions}
+  </a>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-demo-map]').forEach((root) => {
+    const button = root.querySelector<HTMLButtonElement>('[data-load-map]')!;
+    button.hidden = false;
+    button.addEventListener(
+      'click',
+      () => {
+        const frame = document.createElement('iframe');
+        frame.title = button.dataset.title!;
+        frame.src = button.dataset.embed!;
+        frame.width = '640';
+        frame.height = '360';
+        frame.referrerPolicy = 'no-referrer';
+        frame.setAttribute('allow', 'fullscreen');
+        root.querySelector('[data-map-stage]')!.replaceChildren(frame);
+        frame.focus();
+        root.querySelector('[data-map-status]')!.textContent =
+          button.dataset.loaded!;
+      },
+      { once: true },
+    );
+  });
+</script>

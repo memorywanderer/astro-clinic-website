@@ -1,0 +1,102 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import NavigationLinks from '../ui/NavigationLinks.astro';
+import ContactDetails, { type ContactInfo } from '../ui/ContactDetails.astro';
+import type { NavigationGroup, NavigationLink } from '../ui/navigation';
+interface Props extends HTMLAttributes<'footer'> {
+  layout?: 'simple' | 'multiColumn' | 'extended';
+  name: string;
+  homeHref: string;
+  description?: string;
+  groups?: readonly NavigationGroup[];
+  details?: ContactInfo;
+  copyright?: string;
+  legal?: readonly NavigationLink[];
+  legalLabel?: string;
+}
+const {
+  layout = 'simple',
+  name,
+  homeHref,
+  description,
+  groups = [],
+  details,
+  copyright,
+  legal = [],
+  legalLabel,
+  class: className,
+  ...rest
+} = Astro.props;
+const nonemptyGroups = groups.filter((group) => group.items.length > 0);
+---
+
+<footer {...rest} class:list={['site-footer', className]} data-layout={layout}>
+  <Container class="grid gap-panel">
+    <div
+      class:list={[
+        'footer-main grid gap-panel',
+        { 'md:grid-cols-2 lg:grid-cols-4': layout !== 'simple' },
+      ]}
+    >
+      <div class="grid content-start gap-4">
+        <a href={homeHref} class="footer-brand font-display text-heading">
+          <slot name="logo">{name}</slot>
+        </a>
+        {description && (
+          <p class="max-w-reading text-muted-foreground">{description}</p>
+        )}
+      </div>
+      {nonemptyGroups.map((group) => (
+        <nav aria-label={group.label} class="grid content-start gap-3">
+          <p class="font-bold">{group.label}</p>
+          <NavigationLinks
+            items={group.items}
+            class={layout === 'simple' ? '' : 'flex-col'}
+          />
+        </nav>
+      ))}
+      {details && <ContactDetails {details} />}
+    </div>
+    {layout === 'extended' && Astro.slots.has('extra') && (
+      <div class="border-t border-border pt-6">
+        <slot name="extra" />
+      </div>
+    )}
+    {(copyright || legal.length > 0 || Astro.slots.has('lower')) && (
+      <div
+        class:list={[
+          'flex flex-wrap items-center justify-between gap-4',
+          { 'border-t border-border pt-6': layout === 'extended' },
+        ]}
+      >
+        {copyright && <p class="text-caption">{copyright}</p>}
+        {legal.length > 0 && (
+          <nav aria-label={legalLabel}>
+            <NavigationLinks items={legal} />
+          </nav>
+        )}
+        <slot name="lower" />
+      </div>
+    )}
+  </Container>
+</footer>
+
+<style>
+  @layer components {
+    .site-footer {
+      overflow-wrap: anywhere;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      padding-block: var(--section-space);
+    }
+    @media (min-width: 64rem) {
+      [data-layout='simple'] .footer-main {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: start;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,122 @@
+---
+import { themes, type Theme } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import About from '@/components/blocks/About.astro';
+import Services from '@/components/blocks/Services.astro';
+import Features from '@/components/blocks/Features.astro';
+import Testimonials from '@/components/blocks/Testimonials.astro';
+import Contact from '@/components/blocks/Contact.astro';
+import Button from '@/components/ui/button/ButtonRoot.astro';
+import {
+  exampleNavigation,
+  exampleFooter,
+  professionalServices,
+} from '@/content/business-examples';
+import { quotations, quoteNotice } from '@/content/business-showcase';
+export function getStaticPaths() {
+  return import.meta.env.DEV
+    ? themes.map((theme) => ({ params: { theme }, props: { theme } }))
+    : [];
+}
+interface Props {
+  theme: Theme;
+}
+const { theme } = Astro.props;
+---
+
+<BaseLayout title="Пример профессиональных услуг · Phase 03.1" {theme}>
+  <Header
+    id="professional-header"
+    layout="centered"
+    name="Практика · образец"
+    homeHref="#start"
+    items={exampleNavigation}
+    navigationLabel="Разделы профессионального примера"
+    menuLabel="Меню"
+  />
+  <main>
+    <p class="page-container py-4 text-caption">
+      Демонстрация компонентов. Консультации и отправка сообщений недоступны.
+    </p>
+    <Hero
+      id="start"
+      title="Ясность для следующего решения"
+      eyebrow="Пример C"
+      description="Текстовая композиция профессиональных услуг с акцентом на аргументы и структуру."
+    >
+      <a slot="actions" href="#services" class="text-primary underline">
+        Изучить направления
+      </a>
+    </Hero>
+    <About
+      id="about"
+      layout="minimal"
+      title="Совместная работа начинается с вопросов"
+      description="Короткое введение в узкой колонке, без обязательного изображения."
+    />
+    <Services
+      id="services"
+      layout="list"
+      title="Направления работы"
+      items={professionalServices}
+    />
+    <Features
+      title="Принципы"
+      items={[
+        { title: 'Прозрачность', description: 'Делаем ход решения понятным.' },
+        { title: 'Контекст', description: 'Учитываем исходные ограничения.' },
+      ]}
+    />
+    <Testimonials
+      layout="list"
+      title="Текстовая цитата"
+      description={quoteNotice}
+      items={quotations.slice(0, 1)}
+    />
+    <Contact
+      id="contact"
+      layout="formFocused"
+      title="Сформулируйте задачу"
+      description="Образец формы, отправка отключена."
+      details={{ hours: 'Демонстрация не принимает сообщения.' }}
+    >
+      <form slot="form" aria-label="Неактивный образец обращения">
+        <fieldset
+          disabled
+          class="grid gap-4 rounded-lg border-hairline bg-card p-panel text-card-foreground"
+        >
+          <legend class="font-bold">Форма недоступна в демонстрации</legend>
+          <label for="professional-email">Email</label>
+          <input
+            id="professional-email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            class="w-full rounded-md border-hairline bg-background p-3"
+          />
+          <label for="professional-message">Описание задачи</label>
+          <textarea
+            id="professional-message"
+            name="message"
+            rows={4}
+            class="w-full rounded-md border-hairline bg-background p-3"
+          ></textarea>
+          <Button disabled type="submit">
+            Отправка недоступна
+          </Button>
+        </fieldset>
+      </form>
+    </Contact>
+  </main>
+  <Footer
+    layout="multiColumn"
+    name="Практика · образец"
+    homeHref="#start"
+    groups={exampleFooter}
+    description="Пример сайта профессиональных услуг."
+    copyright="© 2026 Пример композиции"
+  />
+</BaseLayout>

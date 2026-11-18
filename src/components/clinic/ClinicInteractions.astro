@@ -1,0 +1,233 @@
+<script>
+  import { DEMO_MODE, clinic } from '@/config/clinic';
+  import { clinicCopy } from '@/content/clinic-polish';
+  import { contactDestination, track } from '@/lib/clinic';
+  const lang = document.documentElement.lang === 'kk' ? 'kk' : 'ru';
+  const u = clinicCopy[lang];
+  const shell = document.querySelector<HTMLElement>('[data-clinic-sticky]');
+  const sentinel = document.querySelector('[data-clinic-header-sentinel]');
+  const floating = document.querySelector<HTMLElement>('.clinic-floating');
+  const contact = document.querySelector('#contact');
+  if ('IntersectionObserver' in window) {
+    if (shell && sentinel)
+      new IntersectionObserver(([entry]) =>
+        shell.classList.toggle('is-scrolled', !entry.isIntersecting),
+      ).observe(sentinel);
+    if (contact && floating)
+      new IntersectionObserver(([entry]) => {
+        floating.hidden = entry.isIntersecting;
+      }).observe(contact);
+  }
+  const triggers = new WeakMap<HTMLDialogElement, HTMLElement>();
+  const open = (dialog: HTMLDialogElement, trigger: HTMLElement) => {
+    triggers.set(dialog, trigger);
+    dialog.showModal();
+  };
+  const closeDialog = (dialog: HTMLDialogElement) => {
+    dialog.close();
+    triggers.get(dialog)?.focus();
+  };
+  document
+    .querySelectorAll<HTMLDialogElement>('dialog.clinic-dialog')
+    .forEach((dialog) => {
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Tab') return;
+        const controls = [
+          ...dialog.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]), [tabindex="0"]',
+          ),
+        ].filter((el) => el.getClientRects().length > 0);
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      });
+      dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        closeDialog(dialog);
+      });
+      dialog
+        .querySelector('[data-close-dialog]')
+        ?.addEventListener('click', () => closeDialog(dialog));
+    });
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element).closest<HTMLAnchorElement>('a');
+    if (!link) return;
+    const label = link.textContent?.trim() ?? '';
+    const location =
+      link.closest('section')?.id ||
+      (link.closest('.clinic-sticky,.clinic-context')
+        ? 'header'
+        : link.closest('footer')
+          ? 'footer'
+          : 'floating');
+    if (
+      link.closest(
+        '.business-action,.urgent-entry,.map-actions,.clinic-context',
+      )
+    )
+      track('cta_click', { location, label, lang });
+    if (link.closest('.clinic-language')) {
+      track('language_switch', { lang, label });
+      const sections = [
+        ...document.querySelectorAll<HTMLElement>('main > section[id]'),
+      ];
+      const section = sections
+        .filter((s) => s.getBoundingClientRect().top <= innerHeight / 2)
+        .at(-1);
+      if (section) link.hash = section.id;
+      try {
+        localStorage.setItem('clinic-language', link.lang || '');
+        sessionStorage.setItem(
+          'clinic-scroll',
+          JSON.stringify({
+            id: section?.id,
+            offset: section ? section.getBoundingClientRect().top : 0,
+          }),
+        );
+      } catch {
+        /* Storage may be disabled. */
+      }
+      return;
+    }
+    const href = link.getAttribute('href') ?? '';
+    if (href.startsWith('tel:')) track('call_click', { location, lang });
+    if (href.startsWith('https://wa.me/'))
+      track('whatsapp_click', { location, lang });
+    const target = href.startsWith('#')
+      ? document.getElementById(href.slice(1))
+      : null;
+    if (target instanceof HTMLDialogElement) {
+      event.preventDefault();
+      open(target, link);
+      return;
+    }
+    if (
+      [
+        '#messenger-demo',
+        '#phone-demo',
+        '#urgent-demo',
+        '#map-2gis',
+        '#map-google',
+      ].includes(href)
+    ) {
+      event.preventDefault();
+      const urgent = href === '#urgent-demo';
+      const call = href === '#phone-demo';
+      const map = href.startsWith('#map-');
+      const message = urgent ? u.urgentMessage : u.greeting + ' ' + u.heroBook;
+      const destination = map
+        ? href === '#map-2gis'
+          ? clinic.maps.twoGis
+          : clinic.maps.google
+        : contactDestination(call ? 'call' : 'whatsapp', message);
+      track(
+        urgent
+          ? 'urgent_click'
+          : map
+            ? 'cta_click'
+            : call
+              ? 'call_click'
+              : 'whatsapp_click',
+        { location, lang },
+      );
+      if (!DEMO_MODE) {
+        window.location.href = destination;
+        return;
+      }
+      const dialog =
+        document.querySelector<HTMLDialogElement>('#action-dialog')!;
+      dialog.querySelector('[data-action-preview]')!.textContent = map
+        ? label + ' · ' + u.location
+        : call
+          ? clinic.phone + ' · ' + u.phoneExample
+          : 'WhatsApp · ' + message;
+      open(dialog, link);
+      return;
+    }
+    if (href.startsWith('#price-') && target) {
+      track('price_row_click', { location, label, lang });
+      target.classList.remove('is-highlighted');
+      requestAnimationFrame(() => target.classList.add('is-highlighted'));
+      window.setTimeout(() => target.classList.remove('is-highlighted'), 1800);
+    }
+  });
+  document
+    .querySelectorAll<HTMLDetailsElement>('#questions details')
+    .forEach((details) =>
+      details.addEventListener('toggle', () => {
+        if (details.open)
+          track('faq_open', {
+            lang,
+            label: details.querySelector('summary')?.textContent?.trim() ?? '',
+          });
+      }),
+    );
+  document
+    .querySelectorAll<HTMLElement>(
+      '[data-doctor-carousel], [data-review-carousel], [data-promotion-carousel]',
+    )
+    .forEach((carousel) =>
+      carousel.addEventListener('keydown', (event) => {
+        if (
+          event.target !== carousel ||
+          !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)
+        )
+          return;
+        event.preventDefault();
+        const cards = [...carousel.querySelectorAll<HTMLElement>(':scope > *')];
+        const current = cards.reduce(
+          (closest, card, i) =>
+            Math.abs(
+              card.offsetLeft - carousel.offsetLeft - carousel.scrollLeft,
+            ) <
+            Math.abs(
+              cards[closest].offsetLeft -
+                carousel.offsetLeft -
+                carousel.scrollLeft,
+            )
+              ? i
+              : closest,
+          0,
+        );
+        const index =
+          event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? cards.length - 1
+              : Math.max(
+                  0,
+                  Math.min(
+                    cards.length - 1,
+                    current + (event.key === 'ArrowRight' ? 1 : -1),
+                  ),
+                );
+        carousel.scrollTo({
+          left: cards[index].offsetLeft - cards[0].offsetLeft,
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches
+            ? 'instant'
+            : 'smooth',
+        });
+      }),
+    );
+  try {
+    const saved = sessionStorage.getItem('clinic-scroll');
+    sessionStorage.removeItem('clinic-scroll');
+    if (saved) {
+      const { id, offset } = JSON.parse(saved);
+      const restore = () => {
+        const section = document.getElementById(id);
+        if (section)
+          window.scrollBy(0, section.getBoundingClientRect().top - offset);
+      };
+      document.fonts.ready.then(restore);
+    }
+  } catch {
+    /* Native fragment navigation remains available. */
+  }
+</script>

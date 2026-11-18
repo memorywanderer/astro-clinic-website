@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { FormattedPrice } from '@/content/business';
+interface Props extends HTMLAttributes<'span'> {
+  price?: FormattedPrice;
+}
+const { price, class: className, ...rest } = Astro.props;
+---
+
+{price?.text.trim() && (
+  <span
+    {...rest}
+    class:list={['font-bold', className]}
+    data-price-kind={price.value.kind}
+  >
+    {price.text}
+  </span>
+)}

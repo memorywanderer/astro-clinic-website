@@ -1,0 +1,100 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Media, { type MediaSource } from '../ui/Media.astro';
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'split' | 'editorial' | 'minimal';
+  title?: string;
+  eyebrow?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  media?: MediaSource;
+  mediaPlacement?: 'start' | 'end';
+}
+const {
+  layout = 'split',
+  title,
+  eyebrow,
+  description,
+  level = 2,
+  media,
+  mediaPlacement = 'end',
+  class: className,
+  ...rest
+}: Props = Astro.props;
+const hasMedia = media || Astro.slots.has('media');
+---
+
+<section {...rest} class:list={['about', className]} data-layout={layout}>
+  <Container
+    width={layout === 'minimal' ? 'reading' : 'content'}
+    class:list={[
+      'grid items-start gap-panel',
+      { 'lg:grid-cols-2': layout === 'split' && !!hasMedia },
+    ]}
+  >
+    <div
+      class:list={[
+        'grid min-w-0 gap-6',
+        {
+          'lg:order-2':
+            layout === 'split' && mediaPlacement === 'start' && !!hasMedia,
+        },
+      ]}
+    >
+      <SectionHeading
+        {title}
+        {eyebrow}
+        {description}
+        {level}
+        scale={layout === 'editorial' ? 'display' : 'heading'}
+      >
+        <slot name="title" slot="title">
+          {title}
+        </slot>
+        <slot name="eyebrow" slot="eyebrow">
+          {eyebrow}
+        </slot>
+        <slot name="description" slot="description">
+          {description && <p>{description}</p>}
+        </slot>
+      </SectionHeading>
+      {Astro.slots.has('actions') && (
+        <div class="flex flex-wrap gap-4">
+          <slot name="actions" />
+        </div>
+      )}
+    </div>
+    {hasMedia && (
+      <div
+        class:list={[
+          'min-w-0',
+          { 'lg:ms-auto lg:w-2/3': layout === 'editorial' },
+        ]}
+      >
+        <slot name="media">
+          {media && (
+            <Media
+              {media}
+              sizes={
+                layout === 'minimal'
+                  ? '100vw'
+                  : '(min-width: 64rem) 50vw, 100vw'
+              }
+            />
+          )}
+        </slot>
+      </div>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .about {
+      padding-block: var(--section-space);
+      overflow-wrap: anywhere;
+    }
+  }
+</style>

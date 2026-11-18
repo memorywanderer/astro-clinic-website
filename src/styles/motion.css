@@ -1,0 +1,121 @@
+/* Static is the default. Only a successful visibility callback starts a reveal. */
+@layer components {
+  .motion-text {
+    white-space: pre-wrap;
+  }
+  .motion-word {
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .motion-mask {
+    display: inline-block;
+    overflow: clip;
+    vertical-align: bottom;
+  }
+  .motion-mask-content {
+    display: inline-block;
+  }
+  .motion-media {
+    overflow: clip;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-motion-state='active'] {
+    --motion-from-opacity: 0;
+    --motion-from-transform: none;
+  }
+  [data-motion='fade-up'],
+  [data-motion='words'] {
+    --motion-from-transform: translateY(var(--motion-distance));
+  }
+  [data-motion='scale'],
+  [data-motion='image'] {
+    --motion-from-transform: scale(var(--motion-scale));
+  }
+  [data-motion-state='active']:not([data-motion-group]):not(
+      [data-motion='words']
+    ):not([data-motion='mask']),
+  [data-motion-state='active'][data-motion-group] [data-item],
+  [data-motion='words'][data-motion-state='active'] .motion-word,
+  [data-motion='mask'][data-motion-state='active'] .motion-mask-content {
+    animation: motion-reveal var(--motion-duration, var(--duration-slow))
+      var(--ease-enter) both;
+    animation-delay: calc(
+      var(--motion-delay, 0ms) + min(var(--motion-index, 0), 6) *
+        var(--motion-stagger)
+    );
+  }
+  [data-motion-group] [data-item]:nth-child(1) {
+    --motion-index: 0;
+  }
+  [data-motion-group] [data-item]:nth-child(2) {
+    --motion-index: 1;
+  }
+  [data-motion-group] [data-item]:nth-child(3) {
+    --motion-index: 2;
+  }
+  [data-motion-group] [data-item]:nth-child(4) {
+    --motion-index: 3;
+  }
+  [data-motion-group] [data-item]:nth-child(5) {
+    --motion-index: 4;
+  }
+  [data-motion-group] [data-item]:nth-child(n + 6) {
+    --motion-index: 5;
+  }
+  [data-motion='mask'] {
+    --motion-from-transform: translateY(100%);
+  }
+  [data-motion-state='active']:focus-within,
+  [data-motion-state='active']:focus-within [data-item] {
+    animation: none;
+  }
+
+  .motion-lift,
+  .motion-underline {
+    transition: transform var(--duration-fast) var(--ease-standard);
+  }
+  .motion-lift:focus-visible {
+    transform: translateY(calc(-1 * var(--motion-lift)));
+  }
+  .motion-underline:focus-visible {
+    text-underline-offset: 0.3em;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .motion-lift:hover {
+      transform: translateY(calc(-1 * var(--motion-lift)));
+    }
+    .motion-underline:hover {
+      text-underline-offset: 0.3em;
+    }
+  }
+  @supports (animation-timeline: view()) and
+    (animation-range: entry 0% cover 50%) {
+    .motion-scroll-scale {
+      animation: motion-scroll-scale linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 50%;
+    }
+  }
+}
+
+@keyframes motion-reveal {
+  from {
+    opacity: var(--motion-from-opacity, 0);
+    transform: var(--motion-from-transform, none);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes motion-scroll-scale {
+  from {
+    transform: scale(var(--motion-scale));
+  }
+  to {
+    transform: none;
+  }
+}

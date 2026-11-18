@@ -1,0 +1,28 @@
+---
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import PriceList from '@/components/business/PriceList.astro';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+interface Props {
+  content: ClinicHomeContent;
+}
+const { content: c } = Astro.props;
+---
+
+<section id="prices" class="clinic-pricing section-space">
+  <Container>
+    <SectionHeading
+      title={c.prices.title}
+      description={c.prices.description}
+      class="pricing-heading"
+    />
+    <PriceList
+      itemIdPrefix="price-"
+      groups={[{ items: c.treatments }]}
+      layout="cards"
+      class="clinic-price-rows"
+    />
+    <p class="pricing-note">{c.prices.note}</p>
+    <p class="pricing-note">{c.ui.insurance}</p>
+  </Container>
+</section>

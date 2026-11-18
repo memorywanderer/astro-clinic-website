@@ -1,0 +1,24 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { Announcement } from '@/content/business';
+import { isCurrent } from '@/lib/business/formatting';
+import BusinessActionLink from './BusinessActionLink.astro';
+interface Props extends HTMLAttributes<'aside'> {
+  announcement?: Announcement;
+}
+const { announcement, class: className, ...rest } = Astro.props;
+---
+
+{announcement?.message.trim() && isCurrent(announcement) && (
+  <aside
+    {...rest}
+    class:list={['bg-secondary text-secondary-foreground', className]}
+  >
+    <div class="page-container flex flex-wrap items-center justify-center gap-3 py-2 text-caption">
+      {announcement.badge && <strong>{announcement.badge}</strong>}
+      <p>{announcement.message}</p>
+      {announcement.validityLabel && <p>{announcement.validityLabel}</p>}
+      <BusinessActionLink action={announcement.action} presentation="text" />
+    </div>
+  </aside>
+)}

@@ -1,0 +1,130 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Card from '../ui/Card.astro';
+import Media, { type MediaSource } from '../ui/Media.astro';
+import type { NavigationLink } from '../ui/navigation';
+export interface TestimonialItem {
+  id: string;
+  quote: string;
+  author: string;
+  role?: string;
+  organization?: string;
+  avatar?: MediaSource;
+  rating?: { value: number; max: number; label: string };
+  source?: NavigationLink;
+}
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'grid' | 'featured' | 'list';
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  items: readonly TestimonialItem[];
+}
+const {
+  layout = 'grid',
+  title,
+  description,
+  level = 2,
+  items,
+  class: className,
+  ...rest
+}: Props = Astro.props;
+---
+
+<section
+  {...rest}
+  class:list={['testimonials', className]}
+  data-layout={layout}
+>
+  <Container class="grid gap-panel">
+    <slot name="heading">
+      {title && <SectionHeading {title} {description} {level} />}
+    </slot>
+    {items.length > 0 && (
+      <ul
+        class:list={[
+          'grid gap-panel',
+          { 'md:grid-cols-2 lg:grid-cols-3': layout !== 'list' },
+        ]}
+      >
+        {items.map((item: TestimonialItem, index: number) => (
+          <li
+            class:list={[
+              'min-w-0',
+              {
+                'md:col-span-2 md:row-span-2':
+                  layout === 'featured' && index === 0,
+              },
+            ]}
+            data-item={item.id}
+          >
+            <Card variant="outlined" class="h-full">
+              <figure
+                class:list={[
+                  'grid content-start gap-6',
+                  { 'md:grid-cols-3': layout === 'list' },
+                ]}
+              >
+                <blockquote
+                  cite={item.source?.href}
+                  class:list={[
+                    {
+                      'text-heading': layout === 'featured' && index === 0,
+                      'md:col-span-2': layout === 'list',
+                    },
+                  ]}
+                >
+                  <p>{item.quote}</p>
+                </blockquote>
+                <figcaption class="grid content-start gap-3">
+                  {item.avatar && (
+                    <Media
+                      media={item.avatar}
+                      sizes="4rem"
+                      class="max-w-16 rounded-lg"
+                    />
+                  )}
+                  <p class="font-bold">{item.author}</p>
+                  {(item.role || item.organization) && (
+                    <p class="text-caption text-muted-foreground">
+                      {[item.role, item.organization]
+                        .filter(Boolean)
+                        .join(' · ')}
+                    </p>
+                  )}
+                  {item.rating &&
+                    Number.isFinite(item.rating.value) &&
+                    Number.isFinite(item.rating.max) &&
+                    item.rating.max > 0 &&
+                    item.rating.value >= 0 &&
+                    item.rating.value <= item.rating.max && (
+                      <p>
+                        {item.rating.label}: {item.rating.value} /{' '}
+                        {item.rating.max}
+                      </p>
+                    )}
+                  {item.source && (
+                    <a href={item.source.href} class="text-primary underline">
+                      {item.source.label}
+                    </a>
+                  )}
+                </figcaption>
+              </figure>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .testimonials {
+      padding-block: var(--section-space);
+      overflow-wrap: anywhere;
+    }
+  }
+</style>

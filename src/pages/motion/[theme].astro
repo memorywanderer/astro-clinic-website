@@ -1,0 +1,123 @@
+---
+import { themes, type Theme } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Motion from '@/components/motion/Motion.astro';
+import RevealText from '@/components/motion/RevealText.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Services from '@/components/blocks/Services.astro';
+import About from '@/components/blocks/About.astro';
+import Gallery from '@/components/blocks/Gallery.astro';
+import Media from '@/components/ui/Media.astro';
+import { services, galleryItems } from '@/content/business-showcase';
+import { structureMedia } from '@/content/component-showcase';
+export function getStaticPaths() {
+  return import.meta.env.DEV
+    ? themes.map((theme) => ({ params: { theme }, props: { theme } }))
+    : [];
+}
+interface Props {
+  theme: Theme;
+}
+const { theme } = Astro.props;
+---
+
+<BaseLayout title="Движение · Phase 05" {theme}>
+  <Motion />
+  <main>
+    <Hero
+      layout="split"
+      description="Демонстрация: без JavaScript и при уменьшенном движении содержимое остаётся доступным."
+    >
+      <RevealText slot="title" text="Пространство для ясных решений" />
+      <Media slot="media" media={structureMedia} priority data-motion="image" />
+      <a slot="actions" href="#services" class="motion-lift underline">
+        К направлениям
+      </a>
+    </Hero>
+    <div class="page-container py-section grid gap-6">
+      <a href="/motion/alternative/" class="motion-underline underline">
+        Другая тема
+      </a>
+      <a href="/ru/services/" class="underline">
+        Русская страница услуг
+      </a>
+      <p>
+        Эффекты запускаются при появлении. Задержки и длительность задаются
+        CSS-переменными.
+      </p>
+    </div>
+    <Services
+      id="services"
+      title="Направления"
+      items={services}
+      data-motion="fade-up"
+      data-motion-group
+    />
+    <About
+      id="about"
+      title="Материалы и контекст"
+      description="Изображение раскрывается отдельно от компоновки секции."
+    >
+      <div slot="media" class="motion-media" data-motion="image">
+        <Media media={structureMedia} />
+      </div>
+    </About>
+    <Gallery
+      id="gallery"
+      title="Наблюдения"
+      items={galleryItems}
+      data-motion="scale"
+      data-motion-group
+    />
+    <section
+      class="page-container py-section grid gap-panel"
+      aria-labelledby="type-title"
+    >
+      <h2 id="type-title" class="text-heading">
+        Типографика и пресеты
+      </h2>
+      <h3 id="words-ru" class="text-heading">
+        <RevealText text="Слова, пробелы и ясный смысл." />
+      </h3>
+      <h3 id="words-kk" lang="kk" class="text-heading">
+        <RevealText text="Әр сөз — жаңа мүмкіндік: ә ғ қ ң ө ұ ү һ і." />
+      </h3>
+      <h3 id="mask" class="text-heading">
+        <RevealText mode="mask" text="Цельный текст раскрывается из маски" />
+      </h3>
+      {(['fade', 'fade-up', 'scale'] as const).map((effect) => (
+        <p
+          id={`preset-${effect}`}
+          data-motion={effect}
+          style="--motion-duration: var(--duration-normal)"
+        >
+          {effect}: статическое содержимое с необязательным появлением.
+        </p>
+      ))}
+      <p id="repeat" data-motion="fade-up" data-motion-repeat="true">
+        Повторное появление при возвращении.
+      </p>
+      <a
+        id="focus-reveal"
+        data-motion="fade-up"
+        href="#services"
+        class="underline"
+      >
+        Клавиатура сразу открывает доступ к ссылке
+      </a>
+    </section>
+    <section class="page-container py-section" aria-labelledby="scroll-title">
+      <h2 id="scroll-title" class="text-heading">
+        Масштаб по прокрутке
+      </h2>
+      <div class="motion-media">
+        <Media
+          id="scroll-image"
+          media={structureMedia}
+          class="motion-scroll-scale"
+        />
+      </div>
+      <p>Нативная CSS-шкала прокрутки. Без поддержки — обычное изображение.</p>
+    </section>
+  </main>
+</BaseLayout>

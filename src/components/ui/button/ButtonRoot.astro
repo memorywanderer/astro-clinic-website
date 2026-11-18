@@ -1,0 +1,96 @@
+---
+/**
+ * Vendored by the Starwind CLI.
+ * You own this file in your project.
+ */
+import type { HTMLAttributes } from 'astro/types';
+import '@/styles/action-control.css';
+
+interface Props extends HTMLAttributes<'button'> {
+  focusableWhenDisabled?: boolean;
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const {
+  type = 'button',
+  disabled = false,
+  focusableWhenDisabled = false,
+  variant = 'primary',
+  size = 'md',
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<button
+  {...rest}
+  class:list={['sw-button', className]}
+  data-variant={variant}
+  data-size={size}
+  data-focusable-when-disabled={focusableWhenDisabled ? 'true' : undefined}
+  data-disabled={disabled ? '' : undefined}
+  aria-disabled={disabled && focusableWhenDisabled ? 'true' : undefined}
+  disabled={disabled}
+  type={type}
+  data-sw-button
+>
+  <slot />
+</button>
+
+<script>
+  import { createButton } from '@starwind-ui/runtime/button';
+  import {
+    registerAstroControllerLifecycle,
+    trackAstroController,
+  } from '../internal/controller-lifecycle';
+
+  const getInitCandidates = (
+    event: Event | undefined,
+    selector: string,
+  ): HTMLButtonElement[] => {
+    const initRoot =
+      event?.type === 'starwind:init' && event instanceof CustomEvent
+        ? event.detail?.root
+        : undefined;
+    const scopedRoot: Document | DocumentFragment | Element = isQueryableRoot(
+      initRoot,
+    )
+      ? initRoot
+      : document;
+    const candidates = Array.from(
+      scopedRoot.querySelectorAll<HTMLButtonElement>(selector),
+    );
+
+    if (
+      scopedRoot instanceof HTMLButtonElement &&
+      scopedRoot.matches(selector)
+    ) {
+      candidates.unshift(scopedRoot);
+    }
+
+    return candidates;
+  };
+
+  const isQueryableRoot = (
+    value: unknown,
+  ): value is Document | DocumentFragment | Element =>
+    value instanceof Document ||
+    value instanceof DocumentFragment ||
+    value instanceof Element;
+
+  const setupButtons = (event?: Event) => {
+    getInitCandidates(
+      event,
+      '[data-sw-button][data-focusable-when-disabled="true"]',
+    ).forEach((button) =>
+      trackAstroController(
+        'ButtonRoot',
+        button,
+        createButton(button),
+      ).setDisabled(button.hasAttribute('data-disabled')),
+    );
+  };
+
+  registerAstroControllerLifecycle('ButtonRoot', setupButtons);
+</script>

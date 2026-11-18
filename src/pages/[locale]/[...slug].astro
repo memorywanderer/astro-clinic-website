@@ -1,0 +1,128 @@
+---
+import { DEMO_MODE } from '@/config/clinic';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Services from '@/components/blocks/Services.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import {
+  localeLabels,
+  siteConfig,
+  deployment,
+  type Locale,
+} from '@/config/site';
+import { resolvePageSEO } from '@/lib/seo/metadata';
+import { businessSchema, breadcrumbSchema } from '@/lib/seo/structured-data';
+import {
+  routes,
+  availableTranslations,
+  localizedPath,
+  type PageId,
+} from '@/i18n/routes';
+import { t } from '@/i18n/translations';
+import {
+  getBusinessInfo,
+  getNavigation,
+  getPage,
+  getServices,
+} from '@/content/static';
+import Motion from '@/components/motion/Motion.astro';
+import RevealText from '@/components/motion/RevealText.astro';
+import ClinicHome from '@/components/clinic/ClinicHome.astro';
+export function getStaticPaths() {
+  return routes.flatMap((route) =>
+    availableTranslations(route.id).map(({ locale }) => ({
+      params: { locale, slug: route.paths[locale] || undefined },
+      props: { locale, id: route.id },
+    })),
+  );
+}
+interface Props {
+  locale: Locale;
+  id: PageId;
+}
+const { locale, id } = Astro.props;
+const page = getPage(id, locale);
+const business = getBusinessInfo(locale);
+const items = getNavigation(locale, id);
+const services = getServices(locale);
+const homeHref = localizedPath('home', locale)!;
+const translations = availableTranslations(id);
+const languages = translations.map(({ locale: language, href }) => ({
+  locale: language,
+  href,
+  label: localeLabels[language],
+  current: language === locale,
+}));
+const seo = resolvePageSEO(page, locale, getPage);
+if (deployment.profile === 'production' && page.metadata.indexable) {
+  seo.structuredData =
+    id === 'home'
+      ? siteConfig.seo?.business && !DEMO_MODE
+        ? [businessSchema(business, deployment.origin, siteConfig.seo.business)]
+        : []
+      : [
+          breadcrumbSchema(
+            getNavigation(locale, id).map((item) => ({
+              label: item.label,
+              href: new URL(item.href, deployment.origin).href,
+            })),
+          ),
+        ];
+}
+---
+
+<BaseLayout lang={locale} {seo}>
+  {id === 'home' ? (
+    <ClinicHome {locale} />
+  ) : (
+    <>
+      <Motion />
+      <Header
+        id="site-header"
+        name={business.name}
+        {homeHref}
+        {items}
+        navigationLabel={t(locale, 'nav.main')}
+        menuLabel={t(locale, 'nav.menu')}
+      >
+        <LanguageSwitcher
+          slot="language"
+          label={t(locale, 'language.label')}
+          items={languages}
+        />
+      </Header>
+      <main>
+        <Hero {...page.hero} layout="centered">
+          <RevealText slot="title" text={page.hero.title} />
+        </Hero>
+        <Services
+          mediaPriority
+          data-motion="fade-up"
+          data-motion-group
+          title={page.servicesTitle}
+          items={services}
+          layout="list"
+        />
+        <CTA {...page.cta} layout="split">
+          <a
+            slot="actions"
+            href={`mailto:${business.details.email}`}
+            class="font-bold underline underline-offset-4"
+          >
+            {t(locale, 'action.contact')}
+          </a>
+        </CTA>
+      </main>
+      <Footer
+        name={business.name}
+        description={business.description}
+        {homeHref}
+        groups={[{ label: t(locale, 'nav.footer'), items }]}
+        details={business.details}
+      />
+    </>
+  )}
+</BaseLayout>

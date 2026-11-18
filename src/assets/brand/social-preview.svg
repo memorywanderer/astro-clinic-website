@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f6f4ee"/>
+  <rect x="64" y="64" width="1072" height="502" rx="32" fill="#153f3b"/>
+  <g transform="translate(130 120) scale(2.2)" fill="none" stroke="#fafbfa" stroke-width="2">
+    <path d="M8 9v12c0 8 5 12 12 12s12-4 12-12V9M8 19c8 0 12-4 12-12 0 8 4 12 12 12"/>
+  </g>
+  <g fill="#fafbfa" font-family="Arial, sans-serif">
+    <text x="130" y="330" font-size="88" letter-spacing="7">SAYA QAM</text>
+    <text x="134" y="414" font-size="30">Демонстрационный сайт / Үлгі сайт</text>
+    <text x="134" y="488" font-size="22" letter-spacing="4">RU / KK</text>
+  </g>
+</svg>

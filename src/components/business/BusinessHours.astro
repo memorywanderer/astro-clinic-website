@@ -1,0 +1,57 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { BusinessSchedule } from '@/content/business';
+import { validateSchedule } from '@/lib/business/formatting';
+interface Props extends HTMLAttributes<'div'> {
+  schedule?: BusinessSchedule;
+}
+const { schedule, class: className, ...rest } = Astro.props;
+const valid = schedule && validateSchedule(schedule);
+---
+
+{valid && (valid.rows.length > 0 || !!valid.exceptions?.length) && (
+  <div {...rest} class:list={['grid gap-3', className]}>
+    <p class="text-caption">{valid.timezoneLabel}</p>
+    <dl class="grid gap-2">
+      {valid.rows.map((row) => (
+        <div class="flex flex-wrap justify-between gap-x-6 gap-y-1">
+          <dt>{row.label}</dt>
+          <dd>
+            {row.intervals.length
+              ? row.intervals.map((interval, index) => (
+                  <>
+                    {index > 0 && ', '}
+                    <time datetime={interval.start}>{interval.start}</time>–
+                    <time datetime={interval.end}>{interval.end}</time>
+                  </>
+                ))
+              : valid.closedLabel}
+          </dd>
+        </div>
+      ))}
+    </dl>
+    {!!valid.exceptions?.length && (
+      <>
+        <p class="font-bold">{valid.exceptionsLabel}</p>
+        <dl class="grid gap-2">
+          {valid.exceptions.map((row) => (
+            <div class="flex flex-wrap justify-between gap-x-6 gap-y-1">
+              <dt>{row.label}</dt>
+              <dd>
+                {row.intervals.length
+                  ? row.intervals.map((interval, index) => (
+                      <>
+                        {index > 0 && ', '}
+                        <time datetime={interval.start}>{interval.start}</time>–
+                        <time datetime={interval.end}>{interval.end}</time>
+                      </>
+                    ))
+                  : valid.closedLabel}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </>
+    )}
+  </div>
+)}

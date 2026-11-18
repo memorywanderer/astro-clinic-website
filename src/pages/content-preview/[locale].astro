@@ -1,0 +1,36 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Services from '@/components/blocks/Services.astro';
+import Testimonials from '@/components/blocks/Testimonials.astro';
+import { locales, type Locale } from '@/config/site';
+import {
+  getServiceComparison,
+  getPreviewTestimonials,
+} from '@/content/preview';
+import { t } from '@/i18n/translations';
+export function getStaticPaths() {
+  return import.meta.env.DEV
+    ? locales.map((locale) => ({ params: { locale }, props: { locale } }))
+    : [];
+}
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const { field, entry } = getServiceComparison(locale);
+const testimonials = getPreviewTestimonials(locale);
+---
+
+<BaseLayout lang={locale} title="Content normalization preview">
+  <main>
+    <h1 class="page-container py-section text-display">
+      Content normalization preview
+    </h1>
+    <Services data-representation="fields" items={[field]} />
+    <Services data-representation="entries" items={[entry]} />
+    <Testimonials
+      title={t(locale, 'preview.testimonials')}
+      items={testimonials}
+    />
+  </main>
+</BaseLayout>

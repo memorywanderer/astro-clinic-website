@@ -1,0 +1,105 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+import Media, { type MediaSource } from '../ui/Media.astro';
+import type { NavigationLink } from '../ui/navigation';
+export interface GalleryItem {
+  id: string;
+  media: MediaSource;
+  title?: string;
+  caption?: string;
+  link?: NavigationLink;
+}
+interface Props extends Omit<HTMLAttributes<'section'>, 'title'> {
+  layout?: 'grid' | 'masonry' | 'featured';
+  title?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  items: readonly GalleryItem[];
+}
+const {
+  layout = 'grid',
+  title,
+  description,
+  level = 2,
+  items,
+  class: className,
+  ...rest
+}: Props = Astro.props;
+---
+
+<section {...rest} class:list={['gallery', className]} data-layout={layout}>
+  <Container width="wide" class="grid gap-panel">
+    <slot name="heading">
+      {title && <SectionHeading {title} {description} {level} />}
+    </slot>
+    {items.length > 0 && (
+      <ul
+        class:list={[
+          'gallery-items grid items-start gap-panel md:grid-cols-2 lg:grid-cols-3',
+          { 'lg:grid-cols-4': layout === 'masonry' },
+        ]}
+      >
+        {items.map((item: GalleryItem, index: number) => (
+          <li
+            class:list={[
+              'min-w-0',
+              {
+                'md:col-span-2': layout === 'featured' && index === 0,
+                'lg:col-span-2': layout === 'masonry' && index % 3 === 0,
+              },
+            ]}
+            data-item={item.id}
+          >
+            <figure class="grid gap-3">
+              <Media
+                media={item.media}
+                sizes={
+                  layout === 'masonry'
+                    ? index % 3 === 0
+                      ? '(min-width: 64rem) 50vw, (min-width: 48rem) 50vw, 100vw'
+                      : '(min-width: 64rem) 25vw, (min-width: 48rem) 50vw, 100vw'
+                    : layout === 'featured' && index === 0
+                      ? '(min-width: 48rem) 66vw, 100vw'
+                      : '(min-width: 64rem) 33vw, (min-width: 48rem) 50vw, 100vw'
+                }
+                class:list={[
+                  'gallery-image rounded-lg',
+                  { 'aspect-video object-cover': layout === 'grid' },
+                ]}
+              />
+              {(item.title || item.caption || item.link) && (
+                <figcaption class="grid gap-2">
+                  {item.title && <p class="font-bold">{item.title}</p>}
+                  {item.caption && (
+                    <p class="text-caption text-muted-foreground">
+                      {item.caption}
+                    </p>
+                  )}
+                  {item.link && (
+                    <a href={item.link.href} class="text-primary underline">
+                      {item.link.label}
+                    </a>
+                  )}
+                </figcaption>
+              )}
+            </figure>
+          </li>
+        ))}
+      </ul>
+    )}
+  </Container>
+</section>
+
+<style>
+  @layer components {
+    .gallery {
+      padding-block: var(--section-space);
+      overflow-wrap: anywhere;
+    }
+    [data-layout='masonry'] .gallery-items {
+      align-items: start;
+    }
+  }
+</style>

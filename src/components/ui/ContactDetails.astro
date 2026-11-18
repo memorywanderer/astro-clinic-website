@@ -1,0 +1,58 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { phoneHref, emailHref, httpHref, hasContactInfo } from '@/lib/contact';
+import type { ContactInfo } from '@/content/contact';
+export type { ContactInfo } from '@/content/contact';
+interface Props extends HTMLAttributes<'div'> {
+  details: ContactInfo;
+}
+const { details, class: className, ...rest } = Astro.props;
+const phone = phoneHref(details.phone?.number);
+const email = emailHref(details.email);
+const links =
+  details.links?.filter((link) => link.label.trim() && httpHref(link.href)) ??
+  [];
+const map = details.map?.label.trim() && httpHref(details.map.href);
+const hasDetails = hasContactInfo(details);
+---
+
+{hasDetails && (
+  <div {...rest} class:list={['grid min-w-0 gap-4', className]}>
+    {(phone || email || details.address?.trim()) && (
+      <address class="grid gap-3 not-italic">
+        {phone && (
+          <a href={phone} class="text-primary underline">
+            {details.phone?.text.trim() || details.phone?.number}
+          </a>
+        )}
+        {email && (
+          <a href={email} class="text-primary underline">
+            {details.email}
+          </a>
+        )}
+        {details.address?.trim() && (
+          <p class="whitespace-pre-line">{details.address}</p>
+        )}
+      </address>
+    )}
+    {details.hours?.trim() && (
+      <p class="whitespace-pre-line">{details.hours}</p>
+    )}
+    {links.length > 0 && (
+      <ul class="flex flex-wrap gap-4">
+        {links.map((link) => (
+          <li>
+            <a href={httpHref(link.href)} class="text-primary underline">
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    {map && (
+      <a href={map} class="text-primary underline">
+        {details.map?.label}
+      </a>
+    )}
+  </div>
+)}

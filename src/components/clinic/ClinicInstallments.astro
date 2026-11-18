@@ -1,0 +1,12 @@
+---
+import type { Locale } from '@/config/site';
+import { clinicFinal } from '@/content/clinic-final';
+interface Props {
+  locale: Locale;
+}
+const u = clinicFinal[Astro.props.locale];
+---
+
+<div class="clinic-installments">
+  <p class="text-caption">{u.installmentNote}</p>
+</div>

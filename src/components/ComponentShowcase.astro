@@ -1,0 +1,194 @@
+---
+import type { Theme } from '@/config/site';
+import { themes } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from './ui/Container.astro';
+import SectionHeading from './ui/SectionHeading.astro';
+import Card from './ui/Card.astro';
+import Button from './ui/button/ButtonRoot.astro';
+import Hero from './blocks/Hero.astro';
+import Features from './blocks/Features.astro';
+import CTA from './blocks/CTA.astro';
+import BusinessShowcase from './BusinessShowcase.astro';
+import {
+  engineeringFeatures,
+  studioFeatures,
+  structureMedia,
+  studioMedia,
+} from '@/content/component-showcase';
+interface Props {
+  theme: Theme;
+}
+const { theme } = Astro.props;
+---
+
+<BaseLayout title={`Компоненты · ${theme}`} {theme}>
+  <main>
+    <Container class="grid gap-6 py-section">
+      <SectionHeading
+        title="Компоненты и композиции"
+        level={1}
+        description="Проверка вариантов, тем, длинного текста и необязательного содержимого."
+      />
+      <nav aria-label="Темы компонентов" class="flex flex-wrap gap-6">
+        {themes.map((name) => (
+          <a
+            href={`/components/${name}/`}
+            aria-current={name === theme ? 'page' : undefined}
+            class="text-primary underline"
+          >
+            {name}
+          </a>
+        ))}
+      </nav>
+      <section aria-label="Примитивы" class="grid gap-6">
+        <SectionHeading
+          title="Примитивы"
+          eyebrow="Phase 03"
+          description="Семантика, размеры и состояния"
+        />
+        <div class="flex flex-wrap items-start gap-4">
+          <Button size="sm">Маленькая</Button>
+          <Button variant="secondary">Вторичная</Button>
+          <Button variant="outline" size="lg">
+            Контурная
+          </Button>
+          <Button disabled>Недоступно</Button>
+          <Button disabled focusableWhenDisabled>
+            Объяснимое ограничение
+          </Button>
+        </div>
+        <form action="/components/default/" data-testid="disabled-form">
+          <Button type="submit" disabled focusableWhenDisabled>
+            Отправка недоступна
+          </Button>
+        </form>
+        <div class="grid gap-panel md:grid-cols-3">
+          <Card>
+            <h3 class="text-heading">Обычная</h3>
+            <p>Содержимое задаёт страница.</p>
+          </Card>
+          <Card variant="elevated">
+            <h3 class="text-heading">С тенью</h3>
+          </Card>
+          <Card
+            id="card-override"
+            variant="outlined"
+            class="p-4"
+            style="border-style: dashed"
+          >
+            <h3 class="text-heading">С границей</h3>
+            <p>Локальное переопределение style.</p>
+          </Card>
+        </div>
+      </section>
+    </Container>
+    <Container width="reading" class="py-6">
+      <p>Узкая колонка для чтения.</p>
+    </Container>
+    <Container width="wide" class="py-6">
+      <p>Широкая колонка для композиции.</p>
+    </Container>
+    <Container width="full" class="py-6">
+      <p>Вся доступная ширина с адаптивными полями.</p>
+    </Container>
+
+    <article aria-label="Инженерная композиция" data-testid="engineering">
+      <Hero
+        id="hero-split"
+        layout="split"
+        level={2}
+        title="Сложные задачи. Ясные решения."
+        eyebrow="Инженерная практика"
+        description="Согласованный проект — от первого исследования до передачи результата команде."
+        media={structureMedia}
+        mediaPriority
+      >
+        <a
+          slot="actions"
+          href="#engineering-cta"
+          class="text-primary underline"
+        >
+          Обсудить проект
+        </a>
+      </Hero>
+      <Features
+        id="features-grid"
+        title="Как устроена работа"
+        items={engineeringFeatures}
+      />
+      <CTA
+        id="engineering-cta"
+        layout="split"
+        title="Начнём с вашей задачи"
+        description="Опишите контекст, чтобы подготовить первую встречу."
+      >
+        <Fragment slot="actions">
+          <a href="mailto:demo@example.com" class="text-primary underline">
+            Написать команде
+          </a>
+          <a href="#hero-split" class="text-primary underline">
+            Вернуться к проекту
+          </a>
+        </Fragment>
+      </CTA>
+    </article>
+
+    <article aria-label="Редакционная композиция" data-testid="studio">
+      <Hero
+        id="hero-fullBleed"
+        layout="fullBleed"
+        level={2}
+        media={studioMedia}
+      >
+        <Fragment slot="eyebrow">Мастерская формы</Fragment>
+        <Fragment slot="title">
+          Пространство для <em>нового взгляда</em>
+        </Fragment>
+        <p slot="description">
+          Небольшие серии, выразительные материалы и внимание к повседневным
+          предметам.
+        </p>
+        <a slot="actions" href="#studio-cta" class="text-primary underline">
+          Познакомиться
+        </a>
+      </Hero>
+      <Features
+        id="features-alternating"
+        layout="alternating"
+        items={studioFeatures}
+      >
+        <SectionHeading
+          slot="heading"
+          title="Материал и ритм"
+          description="Две истории в чередующемся расположении."
+        />
+      </Features>
+      <CTA id="studio-cta" title="Расскажите свою историю">
+        <a
+          slot="actions"
+          href="mailto:demo@example.com"
+          class="text-primary underline"
+        >
+          Связаться с мастерской
+        </a>
+      </CTA>
+    </article>
+
+    <section aria-label="Минимальное содержимое">
+      <Hero
+        id="hero-centered"
+        level={2}
+        title="Только главное"
+        description="Центрированный вариант без медиа, подписи и действий."
+      />
+      <Features
+        id="features-single"
+        title="Один пункт"
+        items={[engineeringFeatures[2]]}
+      />
+      <Features id="features-empty" title="Без пунктов" items={[]} />
+    </section>
+    <BusinessShowcase {theme} />
+  </main>
+</BaseLayout>

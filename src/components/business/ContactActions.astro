@@ -1,0 +1,66 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { ResolvedBusinessAction } from '@/content/business';
+import { usableAction } from '@/lib/business/actions';
+import BusinessActionLink from './BusinessActionLink.astro';
+interface Props extends HTMLAttributes<'div'> {
+  actions: readonly ResolvedBusinessAction[];
+  layout?: 'inline' | 'stacked' | 'compact';
+  presentation?: 'button' | 'icon';
+}
+const {
+  actions,
+  layout = 'inline',
+  presentation = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+let primaryUsed = false;
+const visible = actions.filter(usableAction).map((action) => {
+  if (action.emphasis !== 'primary') return action;
+  const result = {
+    ...action,
+    emphasis: primaryUsed ? ('secondary' as const) : ('primary' as const),
+  };
+  primaryUsed = true;
+  return result;
+});
+---
+
+{visible.length > 0 && (
+  <div
+    {...rest}
+    class:list={['contact-actions flex flex-wrap gap-3', className]}
+    data-layout={layout}
+  >
+    {visible.map((action, index) => (
+      <BusinessActionLink
+        {action}
+        presentation={
+          presentation === 'icon'
+            ? 'icon'
+            : layout === 'compact'
+              ? 'compact'
+              : 'button'
+        }
+      >
+        {Astro.slots.has(`icon-${index}`) && (
+          <span slot="icon">
+            <slot name={`icon-${index}`} />
+          </span>
+        )}
+      </BusinessActionLink>
+    ))}
+  </div>
+)}
+<style>
+  @layer components {
+    .contact-actions {
+      min-width: 0;
+    }
+    .contact-actions[data-layout='stacked'] {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>

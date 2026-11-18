@@ -1,0 +1,35 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+interface Props extends HTMLAttributes<'div'> {
+  variant?: 'default' | 'elevated' | 'outlined';
+}
+const { variant = 'default', class: className, ...rest } = Astro.props;
+---
+
+<div
+  {...rest}
+  class:list={[
+    'card-frame',
+    {
+      'shadow-md': variant === 'elevated',
+      'border-hairline': variant === 'outlined',
+    },
+    className,
+  ]}
+>
+  <slot />
+</div>
+
+<style>
+  @layer components {
+    .card-frame {
+      display: grid;
+      min-width: 0;
+      gap: calc(var(--spacing) * 4);
+      border-radius: calc(var(--radius) * 2);
+      background: var(--card);
+      padding: var(--panel-space);
+      color: var(--card-foreground);
+    }
+  }
+</style>

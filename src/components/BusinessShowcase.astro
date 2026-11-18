@@ -1,0 +1,294 @@
+---
+import Header from './layout/Header.astro';
+import Footer from './layout/Footer.astro';
+import Services from './blocks/Services.astro';
+import About from './blocks/About.astro';
+import Testimonials from './blocks/Testimonials.astro';
+import Contact from './blocks/Contact.astro';
+import FAQ from './blocks/FAQ.astro';
+import Gallery from './blocks/Gallery.astro';
+import Container from './ui/Container.astro';
+import Button from './ui/button/ButtonRoot.astro';
+import {
+  navigation,
+  footerGroups,
+  demoContact,
+  services,
+  quotations,
+  quoteNotice,
+  faqItems,
+  faqGroups,
+  galleryItems,
+} from '@/content/business-showcase';
+import { studioMedia } from '@/content/component-showcase';
+import type { Theme } from '@/config/site';
+interface Props {
+  theme: Theme;
+}
+const { theme } = Astro.props;
+---
+
+<section id="business-showcase" aria-labelledby="business-showcase-heading">
+  <Container class="grid gap-6 py-section">
+    <h2 id="business-showcase-heading" class="text-display">
+      Блоки для бизнес-сайтов
+    </h2>
+    <p>
+      Все варианты Phase 03.1. Фиктивные композиции, без реальных услуг и приёма
+      обращений.
+    </p>
+    <nav aria-label="Примеры страниц" class="flex flex-wrap gap-6">
+      <a href={`/examples/${theme}/clinic/`} class="text-primary underline">
+        Клиника
+      </a>
+      <a
+        href={`/examples/${theme}/construction/`}
+        class="text-primary underline"
+      >
+        Строительная компания
+      </a>
+      <a
+        href={`/examples/${theme}/professional/`}
+        class="text-primary underline"
+      >
+        Профессиональные услуги
+      </a>
+    </nav>
+  </Container>
+  {(['standard', 'centered', 'overlay'] as const).map((layout) => (
+    <section
+      class="relative pb-section"
+      aria-label={`Header ${layout}`}
+      data-preview={`header-${layout}`}
+    >
+      <Header
+        id={`header-${layout}`}
+        {layout}
+        name={`Навигация · ${layout}`}
+        homeHref="#business-showcase"
+        items={navigation}
+        navigationLabel={`Разделы · ${layout}`}
+        menuLabel="Меню"
+      >
+        <a
+          slot="actions"
+          href="#contact-details"
+          class="text-primary underline"
+        >
+          Задать вопрос
+        </a>
+        <span slot="language" class="text-caption">
+          RU / KK · образец слота
+        </span>
+      </Header>
+      {layout === 'overlay' && (
+        <div class="bg-muted px-gutter pt-section pb-section">
+          <p class="pt-section">
+            Первый экран под прозрачной оболочкой Header. Панель навигации
+            сохраняет контраст.
+          </p>
+        </div>
+      )}
+    </section>
+  ))}
+  {(['grid', 'list', 'featured'] as const).map((layout) => (
+    <Services
+      id={`services-${layout}`}
+      {layout}
+      level={3}
+      title={`Услуги · ${layout}`}
+      items={services}
+    />
+  ))}
+  <About
+    id="about-split"
+    title="О подходе · split"
+    level={3}
+    media={studioMedia}
+    mediaPlacement="start"
+    eyebrow="Описание через props"
+    description="Текст и иллюстрация меняются местами без нового компонента."
+  />
+  <About id="about-editorial" layout="editorial" level={3} media={studioMedia}>
+    <Fragment slot="title">
+      История через <em>композицию</em>
+    </Fragment>
+    <Fragment slot="description">
+      <p>Более свободная редакционная структура.</p>
+      <ul class="list-disc ps-6">
+        <li>Несколько абзацев и списки через слот.</li>
+        <li>Никакого универсального rich-text движка.</li>
+      </ul>
+    </Fragment>
+    <a slot="actions" href="#contact-details" class="text-primary underline">
+      Продолжить знакомство
+    </a>
+  </About>
+  <About
+    id="about-minimal"
+    layout="minimal"
+    level={3}
+    title="О главном · minimal"
+    description="Короткое введение без изображения."
+  />
+  {(['grid', 'featured', 'list'] as const).map((layout) => (
+    <Testimonials
+      id={`testimonials-${layout}`}
+      {layout}
+      level={3}
+      title={`Цитаты · ${layout}`}
+      description={quoteNotice}
+      items={quotations}
+    />
+  ))}
+  <Contact
+    id="contact-details"
+    level={3}
+    title="Контакты · details"
+    details={demoContact}
+  >
+    <a slot="actions" href="#business-showcase" class="text-primary underline">
+      К началу
+    </a>
+  </Contact>
+  <Contact
+    id="contact-links"
+    level={3}
+    title="Технические образцы контактных полей"
+    details={{
+      phone: {
+        text: 'Образец телефона · не звонить',
+        number: '+7 (000) 000-00-00',
+      },
+      email: 'sample+demo@example.com',
+      address: 'Адрес передаётся текстом\nЭто не место приёма',
+      hours: 'Образец расписания',
+      map: {
+        label: 'Карта мира · образец ссылки',
+        href: 'https://www.openstreetmap.org/',
+      },
+      links: [{ label: 'Недопустимая ссылка', href: 'javascript:alert(1)' }],
+    }}
+  />
+  {(['split', 'formFocused'] as const).map((layout) => (
+    <Contact
+      id={`contact-${layout}`}
+      {layout}
+      level={3}
+      title={`Контакты · ${layout}`}
+      details={demoContact}
+    >
+      <form slot="form" aria-label={`Неактивная форма · ${layout}`}>
+        <fieldset
+          disabled
+          class="grid gap-4 rounded-md border-hairline bg-card p-panel text-card-foreground"
+        >
+          <legend class="font-bold">Образец формы. Отправка отключена.</legend>
+          <label for={`name-${layout}`}>Имя</label>
+          <input
+            id={`name-${layout}`}
+            name="name"
+            autocomplete="name"
+            class="w-full rounded-md border-hairline bg-background p-3"
+          />
+          <label for={`email-${layout}`}>Email</label>
+          <input
+            id={`email-${layout}`}
+            name="email"
+            type="email"
+            autocomplete="email"
+            class="w-full rounded-md border-hairline bg-background p-3"
+          />
+          <Button type="submit" disabled>
+            Отправка недоступна
+          </Button>
+        </fieldset>
+      </form>
+    </Contact>
+  ))}
+  <FAQ
+    id="faq-accordion"
+    level={3}
+    title="Вопросы · accordion"
+    items={faqItems}
+  >
+    <Fragment slot="answer-materials">
+      <p>
+        Ответ со <strong>смысловым акцентом</strong> и списком.
+      </p>
+      <ul class="list-disc ps-6">
+        <li>Исходные материалы.</li>
+        <li>Пожелания и вопросы.</li>
+      </ul>
+    </Fragment>
+  </FAQ>
+  <FAQ
+    id="faq-simple"
+    layout="simple"
+    level={3}
+    title="Вопросы · simple"
+    items={faqItems}
+  />
+  <FAQ
+    id="faq-grouped"
+    layout="grouped"
+    level={3}
+    title="Вопросы · grouped"
+    groups={faqGroups}
+  />
+  {(['grid', 'masonry', 'featured'] as const).map((layout) => (
+    <Gallery
+      id={`gallery-${layout}`}
+      {layout}
+      level={3}
+      title={`Галерея · ${layout}`}
+      items={galleryItems}
+    />
+  ))}
+  <Container
+    class="grid gap-4 py-section"
+    aria-label="Пустое и минимальное содержимое"
+  >
+    <Services id="services-empty" items={[]} />
+    <Services
+      id="services-single"
+      layout="featured"
+      level={3}
+      title="Одна услуга без медиа"
+      items={[services[2]]}
+    />
+    <Testimonials id="testimonials-empty" items={[]} />
+    <Contact
+      id="contact-empty"
+      details={{ phone: { text: '', number: '' }, email: '', links: [] }}
+    />
+    <FAQ id="faq-empty" items={[]} />
+    <Gallery id="gallery-empty" items={[]} />
+  </Container>
+  {(['simple', 'multiColumn', 'extended'] as const).map((layout) => (
+    <section aria-label={`Footer ${layout}`} data-preview={`footer-${layout}`}>
+      <Footer
+        {layout}
+        name={`Подвал · ${layout}`}
+        homeHref="#business-showcase"
+        groups={footerGroups}
+        details={layout === 'simple' ? undefined : demoContact}
+        copyright="© 2026 Демонстрационный проект"
+        description={
+          layout === 'simple'
+            ? undefined
+            : 'Типографика и композиция подвала без бизнес-данных.'
+        }
+        legal={[{ label: 'О демонстрации', href: '#business-showcase' }]}
+        legalLabel="Информация о демонстрации"
+      >
+        <p slot="extra">
+          Слот для дополнительного содержимого. Подписка не подключена.
+        </p>
+        <span slot="lower" class="text-caption">
+          Phase 03.1
+        </span>
+      </Footer>
+    </section>
+  ))}
+</section>

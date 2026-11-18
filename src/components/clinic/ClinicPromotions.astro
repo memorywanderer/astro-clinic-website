@@ -1,0 +1,50 @@
+---
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import Promotion from '@/components/business/Promotion.astro';
+import PaymentOptions from '@/components/business/PaymentOptions.astro';
+import ClinicInstallments from './ClinicInstallments.astro';
+import { isCurrent } from '@/lib/business/formatting';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+interface Props {
+  content: ClinicHomeContent;
+}
+const { content: c } = Astro.props;
+const offers = c.promotions.filter((offer) => isCurrent(offer));
+---
+
+<section id="promotions" class="clinic-commercial section-space">
+  <Container>
+    <SectionHeading title={c.final.promotions} />
+    <div class="commercial-layout">
+      <div
+        class:list={[
+          'promotion-track',
+          { 'promotion-track--multiple': offers.length > 1 },
+        ]}
+        data-promotion-carousel={offers.length > 1 ? '' : undefined}
+        tabindex={offers.length > 1 ? 0 : undefined}
+        role={offers.length > 1 ? 'region' : undefined}
+        aria-label={offers.length > 1 ? c.final.promotions : undefined}
+      >
+        {offers.map((offer, i) => (
+          <Promotion
+            promotion={offer}
+            id={i === 0 ? 'promotion' : `promotion-${i}`}
+            class="clinic-promotion"
+            level={3}
+          />
+        ))}
+        {offers.length === 0 && <p>{c.final.offerEmpty}</p>}
+      </div>
+      <div id="payment" class="clinic-payment">
+        <h3>{c.payment.title}</h3>
+        <ClinicInstallments locale={c.locale} />
+        <PaymentOptions options={c.payment.options} />
+        <div id="offer-terms" class="offer-terms">
+          <p>{c.ui.promoConditions}</p>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

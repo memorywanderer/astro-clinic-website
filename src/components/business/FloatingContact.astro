@@ -1,0 +1,151 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { ResolvedBusinessAction } from '@/content/business';
+import { usableAction } from '@/lib/business/actions';
+import ContactActions from './ContactActions.astro';
+interface Props extends HTMLAttributes<'aside'> {
+  actions: readonly ResolvedBusinessAction[];
+  layout?: 'group' | 'bar';
+  visibility?: 'always' | 'mobile' | 'desktop';
+  presentation?: 'button' | 'icon';
+}
+const {
+  actions,
+  layout = 'group',
+  visibility = 'always',
+  presentation = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+// Persistent controls stay compact; compose the full list in Contact instead.
+const visible = actions.filter(usableAction).slice(0, 2);
+---
+
+{visible.length > 0 && (
+  <div
+    class="floating-reservation"
+    data-floating-contact
+    data-layout={layout}
+    data-visibility={visibility}
+  >
+    <aside
+      {...rest}
+      class:list={['floating-contact', className]}
+      data-layout={layout}
+      data-visibility={visibility}
+    >
+      <ContactActions
+        actions={visible}
+        layout={layout === 'group' ? 'stacked' : 'compact'}
+        {presentation}
+      >
+        {Astro.slots.has('icon-0') && (
+          <span slot="icon-0">
+            <slot name="icon-0" />
+          </span>
+        )}
+        {Astro.slots.has('icon-1') && (
+          <span slot="icon-1">
+            <slot name="icon-1" />
+          </span>
+        )}
+      </ContactActions>
+    </aside>
+  </div>
+)}
+<style>
+  @layer components {
+    .floating-reservation {
+      display: grid;
+      padding-block: calc(var(--spacing) * 4);
+      padding-bottom: calc(var(--spacing) * 4 + env(safe-area-inset-bottom));
+    }
+    .floating-contact {
+      margin-inline: auto;
+      width: fit-content;
+      max-width: calc(100% - var(--page-gutter) * 2);
+      background: var(--card);
+      color: var(--card-foreground);
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius);
+      padding: calc(var(--spacing) * 3);
+      box-shadow: var(--elevation-raised);
+    }
+    /* Fixed positioning is enhanced only after its actual wrapping height is reserved. */
+    .floating-reservation[data-floating-ready] {
+      min-height: var(--contact-height);
+    }
+    .floating-reservation[data-floating-ready] .floating-contact {
+      position: fixed;
+      bottom: max(calc(var(--spacing) * 3), env(safe-area-inset-bottom));
+      inset-inline: var(--page-gutter);
+      z-index: 20;
+      max-height: 35dvh;
+      overflow: auto;
+    }
+    .floating-contact[data-layout='group'] {
+      margin-inline-end: max(var(--page-gutter), env(safe-area-inset-right));
+    }
+    .floating-contact[data-layout='bar'] {
+      width: calc(100% - var(--page-gutter) * 2);
+    }
+    .floating-reservation[data-visibility='desktop'] {
+      display: none;
+    }
+    @media (min-width: 48rem) {
+      .floating-reservation[data-visibility='mobile'] {
+        display: none;
+      }
+      .floating-reservation[data-visibility='desktop'] {
+        display: grid;
+      }
+    }
+  }
+  :global(html:has([data-floating-ready])) {
+    scroll-padding-bottom: var(--floating-contact-height);
+  }
+</style>
+<script>
+  import {
+    registerAstroControllerLifecycle,
+    getAstroInitCandidates,
+    trackAstroController,
+  } from '@/components/ui/internal/controller-lifecycle';
+  registerAstroControllerLifecycle('FloatingContact', (event) => {
+    for (const root of getAstroInitCandidates(
+      event,
+      '[data-floating-contact]',
+    )) {
+      if (
+        root.dataset.floatingReady !== undefined ||
+        !('ResizeObserver' in window)
+      )
+        continue;
+      const control = root.querySelector<HTMLElement>('.floating-contact');
+      if (!control) continue;
+      const measure = () => {
+        const styles = getComputedStyle(root);
+        const height = `${styles.display === 'none' ? 0 : control.getBoundingClientRect().height + parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom)}px`;
+        root.style.setProperty('--contact-height', height);
+        document.documentElement.style.setProperty(
+          '--floating-contact-height',
+          height,
+        );
+      };
+      measure();
+      root.dataset.floatingReady = '';
+      const observer = new ResizeObserver(measure);
+      observer.observe(control);
+      trackAstroController('FloatingContact', root, {
+        destroy() {
+          observer.disconnect();
+          delete root.dataset.floatingReady;
+          root.style.removeProperty('--contact-height');
+          document.documentElement.style.removeProperty(
+            '--floating-contact-height',
+          );
+        },
+      });
+    }
+  });
+</script>

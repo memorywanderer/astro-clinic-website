@@ -1,0 +1,23 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Container from '@/components/ui/Container.astro';
+import { t } from '@/i18n/translations';
+---
+
+<BaseLayout title={`404 — ${t('ru', 'error.notFound')}`}>
+  <main class="section-space">
+    <Container>
+      <h1>404</h1>
+      <section lang="ru" aria-labelledby="error-ru">
+        <h2 id="error-ru">{t('ru', 'error.notFound')}</h2>
+        <p>{t('ru', 'error.description')}</p>
+        <a href="/ru/">{t('ru', 'nav.home')} — Русский</a>
+      </section>
+      <section lang="kk" aria-labelledby="error-kk">
+        <h2 id="error-kk">{t('kk', 'error.notFound')}</h2>
+        <p>{t('kk', 'error.description')}</p>
+        <a href="/kk/">{t('kk', 'nav.home')} — Қазақша</a>
+      </section>
+    </Container>
+  </main>
+</BaseLayout>

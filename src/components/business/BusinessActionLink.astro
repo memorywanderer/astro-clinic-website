@@ -1,0 +1,62 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { ResolvedBusinessAction } from '@/content/business';
+import { actionHref, usableAction } from '@/lib/business/actions';
+import '@/styles/action-control.css';
+interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  action?: ResolvedBusinessAction;
+  presentation?: 'text' | 'icon' | 'button' | 'compact';
+}
+const {
+  action,
+  presentation = 'button',
+  class: className,
+  ...rest
+} = Astro.props;
+const hasIcon = Astro.slots.has('icon');
+---
+
+{usableAction(action) && (
+  <a
+    {...rest}
+    href={actionHref(action.href)}
+    class:list={[
+      'business-action',
+      presentation === 'button' ||
+      presentation === 'compact' ||
+      presentation === 'icon'
+        ? 'sw-button'
+        : 'text-primary underline',
+      className,
+    ]}
+    data-variant={action.emphasis === 'primary' ? 'primary' : 'outline'}
+    data-size={presentation === 'compact' ? 'sm' : 'md'}
+    data-presentation={presentation}
+    aria-label={
+      presentation === 'icon' && hasIcon ? action.label : rest['aria-label']
+    }
+    rel={rest.target === '_blank' ? 'noopener noreferrer' : rest.rel}
+  >
+    {hasIcon && (
+      <span aria-hidden="true">
+        <slot name="icon" />
+      </span>
+    )}
+    <span class:list={{ 'sr-only': presentation === 'icon' && hasIcon }}>
+      {action.label}
+    </span>
+  </a>
+)}
+<style>
+  @layer components {
+    .business-action {
+      gap: calc(var(--spacing) * 2);
+      min-height: calc(var(--spacing) * 11);
+      overflow-wrap: anywhere;
+    }
+    .business-action[data-presentation='text'] {
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+</style>

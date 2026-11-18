@@ -1,0 +1,117 @@
+/* Override reference choices here; semantic relationships are declared once below. */
+:root,
+[data-theme='default'] {
+  --theme-background: var(--palette-paper);
+  --theme-foreground: var(--palette-ink);
+  --theme-surface: var(--palette-white);
+  --theme-soft: var(--palette-mist);
+  --theme-muted-text: var(--palette-slate);
+  --theme-primary: var(--palette-blue);
+  --theme-primary-accent: var(--palette-blue-deep);
+  --theme-body: var(--font-reference-sans);
+  --theme-display: var(--font-reference-sans);
+  --theme-radius: 0.125rem;
+  --theme-display-size: clamp(2.25rem, 1.5rem + 3vw, 4.5rem);
+  --theme-heading-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem);
+  --theme-tracking: -0.025em;
+  --theme-gutter: clamp(1rem, 4vw, 3rem);
+  --theme-section: clamp(3rem, 6vw, 6rem);
+  --theme-panel: 1.5rem;
+  --theme-content: 72rem;
+  --theme-reading: 44rem;
+  --theme-wide: 88rem;
+  --theme-shadow-low: 0 1px 3px #18212f1a;
+  --theme-shadow-raised: 0 8px 24px #18212f1f;
+}
+
+[data-theme='alternative'] {
+  --theme-background: var(--palette-cream);
+  --theme-foreground: var(--palette-coffee);
+  --theme-surface: var(--palette-white);
+  --theme-soft: var(--palette-parchment);
+  --theme-muted-text: var(--palette-earth);
+  --theme-primary: var(--palette-rust);
+  --theme-primary-accent: var(--palette-rust-deep);
+  --theme-body: var(--font-reference-serif);
+  --theme-display: var(--font-reference-serif);
+  --theme-radius: 0.75rem;
+  --theme-display-size: clamp(2.75rem, 1.75rem + 4vw, 5.5rem);
+  --theme-heading-size: clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem);
+  --theme-tracking: 0em;
+  --theme-gutter: clamp(1.25rem, 5vw, 4rem);
+  --theme-section: clamp(4rem, 8vw, 8rem);
+  --theme-panel: 2rem;
+  --theme-content: 68rem;
+  --theme-reading: 40rem;
+  --theme-wide: 84rem;
+  --theme-shadow-low: 0 3px 8px #34251d14;
+  --theme-shadow-raised: 0 16px 40px #34251d24;
+}
+
+[data-theme='saya'] {
+  --theme-background: #fafbfa;
+  --theme-foreground: #202d2b;
+  --theme-surface: #ffffff;
+  --theme-soft: #dcece5;
+  --theme-muted-text: #42534d;
+  --theme-primary: #153f3b;
+  --theme-primary-accent: #0e302c;
+  --theme-body: 'Noto Sans', 'Noto Sans Fallback', Arial, sans-serif;
+  --theme-display:
+    'Noto Sans Display', 'Noto Display Fallback', Arial, sans-serif;
+  --theme-radius: 0.5rem;
+  --theme-display-size: clamp(2.4rem, 1.5rem + 2.5vw, 4rem);
+  --theme-heading-size: clamp(1.85rem, 1.35rem + 1.2vw, 2.6rem);
+  --theme-tracking: -0.03em;
+  --theme-gutter: clamp(1.25rem, 4vw, 4rem);
+  --theme-section: clamp(3rem, 5vw, 5rem);
+  --theme-panel: clamp(1.25rem, 2.5vw, 2rem);
+  --theme-content: 78rem;
+  --theme-reading: 48rem;
+  --theme-wide: 86rem;
+  --theme-shadow-low: 0 2px 5px #153f3b12;
+  --theme-shadow-raised: 0 16px 40px #153f3b0d;
+  --theme-lavender: #c8bdd8;
+}
+
+:root,
+[data-theme] {
+  --background: var(--theme-background);
+  --foreground: var(--theme-foreground);
+  --card: var(--theme-surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--card-foreground);
+  --primary: var(--theme-primary);
+  --primary-foreground: var(--palette-white);
+  --primary-accent: var(--theme-primary-accent);
+  --secondary: var(--theme-soft);
+  --secondary-foreground: var(--foreground);
+  --secondary-accent: var(--theme-muted-text);
+  --muted: var(--theme-soft);
+  --muted-foreground: var(--theme-muted-text);
+  --accent: var(--theme-soft);
+  --accent-foreground: var(--foreground);
+  --error: var(--palette-red);
+  --error-foreground: var(--palette-white);
+  --border: var(--theme-muted-text);
+  --input: var(--border);
+  --outline: var(--primary);
+  --body-family: var(--theme-body);
+  --display-family: var(--theme-display);
+  --type-display: var(--theme-display-size);
+  --type-heading: var(--theme-heading-size);
+  --type-body: 1rem;
+  --type-caption: 0.875rem;
+  --display-tracking: var(--theme-tracking);
+  --page-gutter: var(--theme-gutter);
+  --section-space: var(--theme-section);
+  --panel-space: var(--theme-panel);
+  --content-width: var(--theme-content);
+  --reading-width: var(--theme-reading);
+  --wide-width: var(--theme-wide);
+  --radius: var(--theme-radius);
+  --elevation-low: var(--theme-shadow-low);
+  --elevation-raised: var(--theme-shadow-raised);
+  --highlight: var(--theme-lavender, var(--theme-soft));
+}

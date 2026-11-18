@@ -1,0 +1,141 @@
+---
+// Temporary verification scaffold, not a reusable business block or public navigation.
+import ButtonRoot from '@/components/ui/button/ButtonRoot.astro';
+import { siteConfig, themes, type Theme } from '@/config/site';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+interface Props {
+  theme?: Theme;
+}
+const { theme = siteConfig.theme } = Astro.props;
+---
+
+<BaseLayout theme={theme}>
+  <main class="grid gap-section py-section">
+    <header class="page-container grid gap-6">
+      <p class="text-caption text-muted-foreground">Phase 02 · {theme}</p>
+      <h1 class="max-w-reading font-display text-display tracking-display">
+        Основа визуального языка
+      </h1>
+      <p class="max-w-reading text-body">
+        Общая разметка, две самостоятельные темы. Цвет, типографика и
+        пространство задаются через CSS без переключателя на JavaScript.
+      </p>
+      <nav aria-label="Предпросмотр тем" class="flex flex-wrap gap-6">
+        {themes.map((name) => (
+          <a
+            href={`/design-system/${name}/`}
+            aria-current={theme === name ? 'page' : undefined}
+            class="text-primary-accent underline underline-offset-4"
+          >
+            {name}
+          </a>
+        ))}
+      </nav>
+    </header>
+    <section class="page-container grid gap-6" aria-labelledby="surfaces">
+      <h2 id="surfaces" class="text-heading">
+        Поверхности и состояния
+      </h2>
+      <div class="grid gap-6 md:grid-cols-2">
+        <div
+          class="grid gap-6 rounded-lg border-hairline bg-card p-panel text-card-foreground shadow-md"
+          data-surface="card"
+        >
+          <h3 class="text-heading">Общая основа</h3>
+          <p class="text-muted-foreground">
+            Карточка, граница, тень и свободное пространство.
+          </p>
+          <ButtonRoot class="w-fit max-w-full rounded-md border-hairline border-primary bg-primary px-6 py-3 font-bold text-primary-foreground hover:bg-primary-accent focus-visible:outline-outline">
+            Starwind UI
+          </ButtonRoot>
+          <ButtonRoot
+            disabled
+            class="w-fit max-w-full rounded-md border-hairline bg-secondary px-6 py-3 text-secondary-foreground disabled:cursor-not-allowed"
+          >
+            Недоступно
+          </ButtonRoot>
+        </div>
+        <div class="grid gap-4">
+          <p
+            class="rounded-md bg-primary p-panel text-primary-foreground"
+            data-surface="primary"
+          >
+            Основная поверхность
+          </p>
+          <p
+            class="rounded-md border-hairline bg-secondary p-panel text-secondary-foreground"
+            data-surface="secondary"
+          >
+            Дополнительная поверхность
+          </p>
+          <p
+            class="rounded-md bg-muted p-panel text-muted-foreground"
+            data-surface="muted"
+          >
+            Приглушённый текст
+          </p>
+          <p
+            class="rounded-md bg-accent p-panel text-accent-foreground"
+            data-surface="accent"
+          >
+            Выделенная поверхность
+          </p>
+          <p
+            class="rounded-md bg-error p-panel text-error-foreground"
+            data-surface="error"
+          >
+            Ошибка: проверьте введённые данные.
+          </p>
+        </div>
+      </div>
+      <label class="grid max-w-reading gap-2">
+        Поле для проверки фокуса
+        <input
+          class="min-w-0 rounded-sm border-hairline border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground"
+          placeholder="Введите текст"
+        />
+      </label>
+    </section>
+    <section class="page-container grid gap-6" aria-labelledby="typography">
+      <h2 id="typography" class="text-heading">
+        Типографика и языки
+      </h2>
+      <p class="font-display text-display tracking-display">Буквы и ритм</p>
+      <p class="max-w-reading text-body">
+        Читаемая строка с независимым визуальным размером и семантическим
+        уровнем заголовка.
+      </p>
+      <p lang="kk" class="text-body">
+        Қазақ тілі: Ә Ғ Қ Ң Ө Ұ Ү Һ І · ә ғ қ ң ө ұ ү һ і
+      </p>
+      <p class="text-caption text-muted-foreground">
+        Подпись · Обычный и <strong>полужирный</strong> текст
+      </p>
+    </section>
+    <section
+      class="bg-secondary py-section text-secondary-foreground"
+      aria-labelledby="layout"
+    >
+      <div class="page-container grid gap-6">
+        <h2 id="layout" class="text-heading">
+          Ширина и пространство
+        </h2>
+        <div class="max-w-reading rounded-sm border-hairline bg-card p-panel text-card-foreground shadow-sm">
+          Узкая область для чтения · max-w-reading
+        </div>
+        <div class="max-w-content rounded-md border-hairline bg-card p-panel text-card-foreground">
+          Основная область · max-w-content
+        </div>
+        <p>
+          Фон секции занимает всю ширину. Внутренний контейнер сохраняет
+          адаптивные поля.
+        </p>
+      </div>
+      <div class="mx-auto mt-6 w-full max-w-wide px-gutter">
+        <div class="rounded-lg border-hairline bg-card p-panel text-card-foreground">
+          Широкая область · max-w-wide
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

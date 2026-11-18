@@ -1,0 +1,26 @@
+{
+  "$schema": "https://starwind.dev/config-schema.v2.json",
+  "version": 2,
+  "framework": "astro",
+  "registry": {
+    "source": "bundled",
+    "version": "2.2.0"
+  },
+  "components": [],
+  "primitives": [
+    {
+      "name": "button",
+      "version": "1.0.3",
+      "framework": "astro",
+      "source": "bundled"
+    }
+  ],
+  "tailwind": {
+    "css": "src/styles/global.css",
+    "baseColor": "neutral",
+    "cssVariables": true
+  },
+  "componentDir": "src/components/ui",
+  "primitiveDir": "src/components/ui",
+  "utilsDir": "src/lib/utils"
+}

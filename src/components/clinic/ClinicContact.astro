@@ -1,0 +1,52 @@
+---
+import Container from '@/components/ui/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import BusinessActionLink from '@/components/business/BusinessActionLink.astro';
+import BusinessHours from '@/components/business/BusinessHours.astro';
+import ClinicIcon from './ClinicIcon.astro';
+import ClinicMap from './ClinicMap.astro';
+import type { ClinicHomeContent } from '@/content/clinic-home';
+import { clinic } from '@/config/clinic';
+interface Props {
+  content: ClinicHomeContent;
+}
+const { content: c } = Astro.props;
+---
+
+<section id="contact" class="clinic-contact section-space">
+  <Container>
+    <div class="contact-layout">
+      <div class="contact-main">
+        <SectionHeading
+          title={c.final.contactLocation}
+          description={c.final.contactNote}
+        />
+        <div class="main-contact-actions">
+          {c.contactActions.map((action, i) => (
+            <BusinessActionLink action={action}>
+              <ClinicIcon slot="icon" name={i === 0 ? 'whatsapp' : 'phone'} />
+            </BusinessActionLink>
+          ))}
+        </div>
+        <p id="phone-demo">
+          {clinic.phone} · {c.ui.phoneExample}
+        </p>
+        <p id="messenger-demo" class="text-caption">
+          WhatsApp · {c.ui.demoTitle}
+        </p>
+        <p id="urgent-demo" class="text-caption">
+          {c.contact.description}
+        </p>
+        <h3>{c.contact.hoursTitle}</h3>
+        <BusinessHours schedule={c.contact.schedule} />
+        <p class="text-caption">{c.final.addressMissing}</p>
+      </div>
+      <div id="directions" class="contact-location">
+        <h3>{c.final.mapPlace}</h3>
+        <p>{c.final.mapAddress}</p>
+        <p class="map-disclosure">{c.final.mapNote}</p>
+        <ClinicMap content={c} />
+      </div>
+    </div>
+  </Container>
+</section>

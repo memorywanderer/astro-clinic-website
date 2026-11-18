@@ -1,0 +1,60 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+export interface Props extends Omit<HTMLAttributes<'header'>, 'title'> {
+  title?: string;
+  eyebrow?: string;
+  description?: string;
+  level?: 1 | 2 | 3 | 4 | 5 | 6;
+  align?: 'start' | 'center';
+  scale?: 'heading' | 'display';
+  headingId?: string;
+}
+const {
+  title,
+  eyebrow,
+  description,
+  level = 2,
+  align = 'start',
+  scale = 'heading',
+  headingId,
+  class: className,
+  ...rest
+} = Astro.props;
+const Heading = `h${level}` as `h${1 | 2 | 3 | 4 | 5 | 6}`;
+// Forwarded slots can exist but render nothing; omit their optional wrappers.
+const hasEyebrow = eyebrow || (await Astro.slots.render('eyebrow'))?.trim();
+const hasDescription =
+  description || (await Astro.slots.render('description'))?.trim();
+---
+
+<header
+  {...rest}
+  class:list={[
+    'grid min-w-0 gap-4',
+    { 'text-center justify-items-center': align === 'center' },
+    className,
+  ]}
+>
+  {hasEyebrow && (
+    <p class="text-caption font-bold text-primary">
+      <slot name="eyebrow">{eyebrow}</slot>
+    </p>
+  )}
+  <Heading
+    id={headingId}
+    class:list={[
+      'max-w-reading font-display tracking-display',
+      scale === 'display' ? 'text-display' : 'text-heading',
+    ]}
+  >
+    <slot name="title">{title}</slot>
+  </Heading>
+  {hasDescription && (
+    <div class="max-w-reading text-body text-muted-foreground">
+      <slot name="description">
+        <p>{description}</p>
+      </slot>
+    </div>
+  )}
+</header>

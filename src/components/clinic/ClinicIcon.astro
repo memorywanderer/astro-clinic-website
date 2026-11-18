@@ -1,0 +1,47 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { ClinicIconName } from '@/content/clinic-home';
+import ArrowRight from '~icons/ph/arrow-right';
+import Baby from '~icons/ph/baby-duotone';
+import Certificate from '~icons/ph/certificate';
+import ChatCircleText from '~icons/ph/chat-circle-text';
+import Chats from '~icons/ph/chats-duotone';
+import Check from '~icons/ph/check';
+import Clock from '~icons/ph/clock';
+import CreditCard from '~icons/ph/credit-card';
+import Crown from '~icons/ph/crown-duotone';
+import MapPin from '~icons/ph/map-pin';
+import Phone from '~icons/ph/phone';
+import Sparkle from '~icons/ph/sparkle-duotone';
+import Tooth from '~icons/ph/tooth-duotone';
+import Alignment from '~icons/ph/arrows-in-line-horizontal-duotone';
+import WhatsAppLogo from '~icons/ph/whatsapp-logo';
+interface Props extends HTMLAttributes<'svg'> {
+  name: ClinicIconName;
+}
+const { name, ...rest } = Astro.props;
+// Existing site-level adapter: service IDs are supplied by the typed content model.
+// Fixed UI icons elsewhere import Phosphor directly; this is not a shared registry.
+const icons = {
+  care: Tooth,
+  hygiene: Sparkle,
+  child: Baby,
+  implants: Tooth,
+  crowns: Crown,
+  orthodontics: Alignment,
+  extraction: Tooth,
+  consultation: Chats,
+  chat: ChatCircleText,
+  phone: Phone,
+  pin: MapPin,
+  check: Check,
+  arrow: ArrowRight,
+  clock: Clock,
+  license: Certificate,
+  payment: CreditCard,
+  whatsapp: WhatsAppLogo,
+} satisfies Record<ClinicIconName, typeof Tooth>;
+const Icon = icons[name];
+---
+
+<Icon {...rest} aria-hidden="true" data-ph-icon={name} />

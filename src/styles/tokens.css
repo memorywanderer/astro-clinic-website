@@ -1,0 +1,88 @@
+/* Reference values shared by both identities. Theme-specific values live in themes.css. */
+:root {
+  --palette-white: #ffffff;
+  --palette-ink: #18212f;
+  --palette-slate: #475569;
+  --palette-paper: #f8fafc;
+  --palette-mist: #e2e8f0;
+  --palette-blue: #1e40af;
+  --palette-blue-deep: #1e3a8a;
+  --palette-cream: #fff8ed;
+  --palette-parchment: #f0e2cb;
+  --palette-coffee: #34251d;
+  --palette-earth: #665040;
+  --palette-rust: #863c24;
+  --palette-rust-deep: #6f2f1b;
+  --palette-red: #991b1b;
+  --font-reference-sans: Arial, 'Helvetica Neue', sans-serif;
+  --font-reference-serif: 'Times New Roman', Times, serif;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --border-width: 1px;
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-stagger: 60ms;
+  --motion-distance: 1rem;
+  --motion-scale: 0.96;
+  --motion-lift: 0.125rem;
+}
+
+/* Starwind-compatible semantic names; no second styled preset is imported. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-accent: var(--primary-accent);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-accent: var(--secondary-accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-outline: var(--outline);
+  --font-body: var(--body-family);
+  --font-display: var(--display-family);
+  --text-display: var(--type-display);
+  --text-display--line-height: 1.1;
+  --text-heading: var(--type-heading);
+  --text-heading--line-height: 1.2;
+  --text-body: var(--type-body);
+  --text-body--line-height: 1.6;
+  --text-caption: var(--type-caption);
+  --text-caption--line-height: 1.5;
+  --tracking-display: var(--display-tracking);
+  --spacing-gutter: var(--page-gutter);
+  --spacing-section: var(--section-space);
+  --spacing-panel: var(--panel-space);
+  --container-content: var(--content-width);
+  --container-reading: var(--reading-width);
+  --container-wide: var(--wide-width);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) * 2);
+  --shadow-sm: var(--elevation-low);
+  --shadow-md: var(--elevation-raised);
+  --default-transition-duration: var(--duration-fast);
+  --default-transition-timing-function: var(--ease-standard);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+  }
+}

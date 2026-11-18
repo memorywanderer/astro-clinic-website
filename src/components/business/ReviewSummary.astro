@@ -1,0 +1,46 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { ReviewSource } from '@/content/business';
+import { usableAction } from '@/lib/business/actions';
+import { instant } from '@/lib/business/formatting';
+import BusinessActionLink from './BusinessActionLink.astro';
+interface Props extends HTMLAttributes<'div'> {
+  source?: ReviewSource;
+}
+const { source, class: className, ...rest } = Astro.props;
+const snapshot = source?.snapshot;
+const valid =
+  snapshot?.verified &&
+  snapshot.label.trim() &&
+  snapshot.checkedLabel.trim() &&
+  Number.isFinite(snapshot.value) &&
+  Number.isFinite(snapshot.max) &&
+  snapshot.max > 0 &&
+  snapshot.value >= 0 &&
+  snapshot.value <= snapshot.max &&
+  (snapshot.count === undefined ||
+    (Number.isInteger(snapshot.count) && snapshot.count >= 0)) &&
+  instant(snapshot.checkedAt) <= Date.now();
+---
+
+{source && usableAction(source.link) && /^https?:/.test(source.link.href) && (
+  <div {...rest} class:list={['grid gap-2', className]}>
+    <BusinessActionLink action={source.link} presentation="text" />
+    {valid && snapshot && (
+      <>
+        <p>
+          {snapshot.label}: {snapshot.value} / {snapshot.max}
+          {snapshot.count !== undefined && snapshot.countLabel && (
+            <>
+              {' '}
+              · {snapshot.countLabel}: {snapshot.count}
+            </>
+          )}
+        </p>
+        <p class="text-caption">
+          <time datetime={snapshot.checkedAt}>{snapshot.checkedLabel}</time>
+        </p>
+      </>
+    )}
+  </div>
+)}

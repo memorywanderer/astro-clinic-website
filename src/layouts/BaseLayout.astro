@@ -1,0 +1,56 @@
+---
+import { siteConfig, type Locale, type Theme } from '@/config/site';
+import '@/styles/global.css';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import type { SEOData } from '@/lib/seo/metadata';
+
+interface Props {
+  title?: string;
+  lang?: Locale;
+  theme?: Theme;
+  description?: string;
+  canonical?: string;
+  alternates?: readonly { locale: Locale; href: string }[];
+  seo?: SEOData;
+}
+
+const {
+  title = siteConfig.name,
+  lang = siteConfig.defaultLocale,
+  theme = siteConfig.theme,
+  description,
+  canonical,
+  alternates = [],
+  seo,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang} data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    {siteConfig.seo?.themeColor && (
+      <meta name="theme-color" content={siteConfig.seo.themeColor} />
+    )}
+    <SEOHead
+      seo={
+        seo ?? {
+          title,
+          description,
+          canonical,
+          alternates,
+          locale: lang,
+          robots: 'noindex, nofollow',
+        }
+      }
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

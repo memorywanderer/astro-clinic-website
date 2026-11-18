@@ -1,0 +1,66 @@
+/* Arial fallback metrics measured against the RU/KK hero/navigation sample.
+   See milestone-07a4.md for the measurement and its portability limits. */
+@font-face {
+  font-family: 'Noto Sans Fallback';
+  src: local('Arial');
+  size-adjust: 104.0147%;
+  ascent-override: 102.7739%;
+  descent-override: 28.1691%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Noto Display Fallback';
+  src: local('Arial');
+  size-adjust: 98.8725%;
+  ascent-override: 108.119%;
+  descent-override: 29.6341%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(/fonts/noto-subset-0.woff2) format('woff2');
+  unicode-range:
+    U+20-21, U+28-29, U+2b-3b, U+3f, U+41-5b, U+5d, U+61-7a, U+a9, U+ab, U+bb,
+    U+c4, U+cb, U+cf, U+d6, U+dc, U+e4, U+eb, U+ef, U+f6, U+fc, U+ff, U+102-103,
+    U+114-115, U+11e-11f, U+12c-12d, U+14e-14f, U+16c-16d, U+178, U+306, U+308,
+    U+401, U+406-407, U+40e, U+410-44f, U+451, U+456-457, U+45e, U+492-493,
+    U+49a-49b, U+4a2-4a3, U+4ae-4b1, U+4ba-4bb, U+4c1-4c2, U+4d0-4d3, U+4d6-4df,
+    U+4e4-4ed, U+4f0-4f1, U+4f4-4f5, U+4f8-4f9, U+1e26-1e27, U+1e84-1e85,
+    U+1e8c-1e8d, U+1e97, U+2013-2014, U+2026;
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(/fonts/noto-subset-0.woff2) format('woff2');
+  unicode-range:
+    U+20-21, U+28-29, U+2b-3b, U+3f, U+41-5b, U+5d, U+61-7a, U+a9, U+ab, U+bb,
+    U+c4, U+cb, U+cf, U+d6, U+dc, U+e4, U+eb, U+ef, U+f6, U+fc, U+ff, U+102-103,
+    U+114-115, U+11e-11f, U+12c-12d, U+14e-14f, U+16c-16d, U+178, U+306, U+308,
+    U+401, U+406-407, U+40e, U+410-44f, U+451, U+456-457, U+45e, U+492-493,
+    U+49a-49b, U+4a2-4a3, U+4ae-4b1, U+4ba-4bb, U+4c1-4c2, U+4d0-4d3, U+4d6-4df,
+    U+4e4-4ed, U+4f0-4f1, U+4f4-4f5, U+4f8-4f9, U+1e26-1e27, U+1e84-1e85,
+    U+1e8c-1e8d, U+1e97, U+2013-2014, U+2026;
+}
+@font-face {
+  font-family: 'Noto Sans Display';
+  font-style: normal;
+  font-weight: 400;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(/fonts/noto-subset-1.woff2) format('woff2');
+  unicode-range:
+    U+20-21, U+28-29, U+2b-3b, U+3f, U+41-5b, U+5d, U+61-7a, U+a9, U+ab, U+bb,
+    U+c4, U+cb, U+cf, U+d6, U+dc, U+e4, U+eb, U+ef, U+f6, U+fc, U+ff, U+102-103,
+    U+114-115, U+11e-11f, U+12c-12d, U+14e-14f, U+16c-16d, U+178, U+306, U+308,
+    U+401, U+406-407, U+40e, U+410-44f, U+451, U+456-457, U+45e, U+492-493,
+    U+49a-49b, U+4a2-4a3, U+4ae-4b1, U+4ba-4bb, U+4c1-4c2, U+4d0-4d3, U+4d6-4df,
+    U+4e4-4ed, U+4f0-4f1, U+4f4-4f5, U+4f8-4f9, U+1e26-1e27, U+1e84-1e85,
+    U+1e8c-1e8d, U+1e97, U+2013-2014, U+2026;
+}

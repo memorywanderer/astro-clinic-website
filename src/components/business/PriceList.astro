@@ -1,0 +1,94 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import type { PriceGroup } from '@/content/business';
+import PriceDisplay from './PriceDisplay.astro';
+import BusinessActionLink from './BusinessActionLink.astro';
+interface Props extends HTMLAttributes<'div'> {
+  groups: readonly PriceGroup[];
+  layout?: 'list' | 'grouped' | 'cards';
+  itemIdPrefix?: string;
+  groupLevel?: 2 | 3 | 4 | 5 | 6;
+}
+const {
+  groups,
+  itemIdPrefix,
+  layout = 'list',
+  groupLevel = 3,
+  class: className,
+  ...rest
+} = Astro.props;
+const Heading = `h${groupLevel}` as 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+const normalizedGroups: readonly PriceGroup[] =
+  layout === 'grouped'
+    ? groups
+    : [{ items: groups.flatMap((group) => group.items) }];
+const visible = normalizedGroups
+  .map((group) => ({
+    ...group,
+    items: group.items.filter((item) => item.name.trim()),
+  }))
+  .filter((group) => group.items.length);
+---
+
+{visible.length > 0 && (
+  <div
+    {...rest}
+    class:list={['price-list grid gap-6', className]}
+    data-layout={layout}
+  >
+    {visible.map((group) => (
+      <div class="grid min-w-0 gap-3">
+        {group.title && (
+          <Heading class="font-display text-heading">{group.title}</Heading>
+        )}
+        <ul class="price-items grid gap-3">
+          {group.items.map((item) => (
+            <li
+              id={itemIdPrefix && item.id ? itemIdPrefix + item.id : undefined}
+              data-item={item.id}
+              class="price-item border-border border-b py-4"
+            >
+              <div class="min-w-0">
+                <p class="font-bold">{item.name}</p>
+                {item.description && (
+                  <p class="text-muted-foreground">{item.description}</p>
+                )}
+              </div>
+              <div class="grid min-w-0 justify-items-start gap-2">
+                <PriceDisplay price={item.price} />
+                <BusinessActionLink action={item.action} presentation="text" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+)}
+<style>
+  @layer components {
+    .price-list {
+      overflow-wrap: anywhere;
+    }
+    .price-item {
+      display: grid;
+      gap: calc(var(--spacing) * 3);
+      align-items: start;
+    }
+    .price-list[data-layout='cards'] .price-item {
+      padding: var(--panel-space);
+      background: var(--card);
+      color: var(--card-foreground);
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius);
+    }
+    @media (min-width: 48rem) {
+      .price-list:not([data-layout='cards']) .price-item {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .price-list[data-layout='cards'] .price-items {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  }
+</style>
